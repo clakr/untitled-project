@@ -1,0 +1,10 @@
+08012022
+- Imported React Router
+- Imported Firebase as BaaS
+- Refactored some components to be used globally
+- Created Register Page UI
+
+07272022 - 07312022
+- Added TailwindCSS
+- Created Login Page UI
+- Refactored Button and Links from HTMLElement to RFC
