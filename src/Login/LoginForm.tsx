@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
 
+// Database
+import { FirebaseError } from 'firebase/app'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../Globals/Firebase'
+
 // Components
 import { FormInput, Button, LinkCustom } from '../Globals/Components'
 
@@ -10,6 +15,7 @@ const initialState = {
 
 const LoginForm: React.FC = () => {
   const [form, setForm] = useState(initialState)
+  const { email, password } = form
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const {
@@ -22,13 +28,25 @@ const LoginForm: React.FC = () => {
     })
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    alert(JSON.stringify(form, null, 2))
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+    } catch (error: unknown) {
+      if (error instanceof FirebaseError) {
+        console.log('cause: ', error.cause)
+        console.log('code: ', error.code)
+        console.log('customData: ', error.customData)
+        console.log('message: ', error.message)
+        console.log('name: ', error.name)
+        console.log('stack: ', error.stack)
+        return
+      }
+    }
+
     setForm(initialState)
   }
-
-  const { email, password } = form
 
   return (
     <form
