@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 
 // Context
 import { useAuth } from '../Globals/AuthContext'
-
-// Components
-import { toast } from 'react-hot-toast'
 
 const InitialRoute = () => {
   //

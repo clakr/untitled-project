@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { auth } from './Firebase'
+import { auth, FirebaseError } from './Firebase'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,6 +8,7 @@ import {
   UserCredential,
   signOut
 } from 'firebase/auth'
+import toast from 'react-hot-toast'
 
 interface propInterface {
   children: JSX.Element
@@ -18,6 +19,7 @@ interface contextInterface {
   createUser: (email: string, password: string) => Promise<UserCredential>
   loginUser: (email: string, password: string) => Promise<UserCredential>
   logoutUser: () => Promise<void>
+  showError: (error: FirebaseError) => void
 }
 
 const AuthContext = createContext<contextInterface>({} as contextInterface)
@@ -43,6 +45,12 @@ const AuthProvider = ({ children }: propInterface) => {
     return signOut(auth)
   }
 
+  const showError = (error: FirebaseError) => {
+    toast.error(error.code, {
+      duration: 2000
+    })
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthedUser(user)
@@ -56,7 +64,8 @@ const AuthProvider = ({ children }: propInterface) => {
     authedUser,
     createUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    showError
   }
 
   return (

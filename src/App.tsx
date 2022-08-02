@@ -1,12 +1,12 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 
 // Route
 import { InitialRoute, UserRoute } from './Routes'
 
 // Components
 import { Login, Register, Dashboard } from './Pages'
-import { Toaster } from 'react-hot-toast'
 
 const App = () => {
   return (

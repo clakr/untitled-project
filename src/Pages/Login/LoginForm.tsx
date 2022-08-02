@@ -1,15 +1,13 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 // Database
 import { FirebaseError } from '../../Globals/Firebase'
 import { useAuth } from '../../Globals/AuthContext'
 
-// Routing
-import { useNavigate } from 'react-router-dom'
-
 // Components
 import { FormInput, Button, LinkCustom } from '../../Globals/Components'
-import toast from 'react-hot-toast'
 
 const initialState = {
   email: '',
@@ -18,7 +16,7 @@ const initialState = {
 
 const LoginForm: React.FC = () => {
   //
-  const { loginUser } = useAuth()
+  const { loginUser, showError } = useAuth()
 
   //
   const navigate = useNavigate()
@@ -42,16 +40,13 @@ const LoginForm: React.FC = () => {
     event.preventDefault()
 
     try {
+      const toastId = toast.loading('Waiting...')
       await loginUser(email, password)
-      toast.success('login: login successful')
+      toast.success('Login Successful', { id: toastId })
       navigate('/dashboard')
     } catch (error: unknown) {
-      if (error instanceof FirebaseError) {
-        toast.error(error.code, {
-          duration: 2000
-        })
-        return
-      }
+      showError(error as FirebaseError)
+      return
     }
 
     setForm(initialState)
@@ -135,13 +130,6 @@ const LoginForm: React.FC = () => {
               focus="focus:outline-offset-[-2px] focus:outline-blue-600"
               padding="px-2 py-1"
               value="Create an account."
-            />
-            <LinkCustom
-              to="dashboard"
-              hover="hover:bg-blue-600 hover:text-gray-50"
-              focus="focus:outline-offset-[-2px] focus:outline-blue-600"
-              padding="px-2 py-1"
-              value="dashboard."
             />
           </h3>
         </div>
