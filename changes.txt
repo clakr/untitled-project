@@ -1,1 +1,11 @@
-- Register and Login Firebase Functionality
+# Created
+  - AuthContext.tsx
+  - src/Pages
+
+# Refactored
+  - App.tsx
+  - Register and Login Functionalities
+  - Folder Structure
+
+# Installed & Imported 
+  - react-hot-toast

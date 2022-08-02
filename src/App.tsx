@@ -1,7 +1,9 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Login from './Login'
-import Register from './Register'
+
+// Components
+import { Login, Register, Dashboard } from './Pages'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
   return (
@@ -9,7 +11,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="dashboard" element={<Dashboard />} />
       </Routes>
+      <Toaster />
     </>
   )
 }

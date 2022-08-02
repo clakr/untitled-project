@@ -1,19 +1,36 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-// Database
-import { FirebaseError } from 'firebase/app'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../Globals/Firebase'
+// Backend
+import { FirebaseError } from '../../Globals/Firebase'
+import { useAuth } from '../../Globals/AuthContext'
+
+// Routing
+import { useNavigate } from 'react-router-dom'
 
 // Components
-import { FormInput, Button, LinkCustom } from '../Globals/Components'
+import { FormInput, Button, LinkCustom } from '../../Globals/Components'
+import toast from 'react-hot-toast'
 
 const initialState = {
   email: '',
   password: ''
 }
 
-const LoginForm: React.FC = () => {
+const RegisterForm: React.FC = () => {
+  //
+  const { authedUser, createUser } = useAuth()
+
+  //
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (authedUser) {
+      navigate('/dashboard')
+      toast.error('redirected')
+    }
+  }, [])
+
+  //
   const [form, setForm] = useState(initialState)
   const { email, password } = form
 
@@ -32,7 +49,8 @@ const LoginForm: React.FC = () => {
     event.preventDefault()
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      await createUser(email, password)
+      navigate('dashboard')
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         console.log('cause: ', error.cause)
@@ -57,7 +75,7 @@ const LoginForm: React.FC = () => {
         <div className="lg:space-y-2">
           {/* Header */}
           <h1 className="font-serif text-3xl font-bold lg:text-4xl">
-            Login Account
+            Register Account
           </h1>
 
           {/* Subheader */}
@@ -84,28 +102,6 @@ const LoginForm: React.FC = () => {
           />
         </div>
 
-        {/* Remember Me and Forgot Password */}
-        <div className="flex justify-between gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="rememberme"
-              id="rememberme"
-              className="bg-transparent focus:outline-blue-600"
-            />
-            <label htmlFor="rememberme" className="select-none">
-              Remember Me
-            </label>
-          </div>
-          <LinkCustom
-            to="forgot"
-            hover="hover:bg-blue-600 hover:text-gray-50"
-            focus="focus:outline-blue-600"
-            padding="px-2 py-1"
-            value="Forgot Password?"
-          />
-        </div>
-
         {/* Submit Button */}
         <Button
           type="submit"
@@ -113,18 +109,18 @@ const LoginForm: React.FC = () => {
           hoverColor="hover:bg-blue-600"
           focusColor="focus:outline-blue-600"
           padding="py-2"
-          value="Log in"
+          value="Register"
         />
 
         {/* Create an account */}
         <h3 className=" text-center">
-          Don&apos;t have an account? <br />
+          Already have an account? <br />
           <LinkCustom
-            to="register"
+            to="/"
             hover="hover:bg-blue-600 hover:text-gray-50"
             focus="focus:outline-offset-[-2px] focus:outline-blue-600"
             padding="px-2 py-1"
-            value="Create an account."
+            value="Sign in an account."
           />
         </h3>
       </div>
@@ -132,4 +128,4 @@ const LoginForm: React.FC = () => {
   )
 }
 
-export default LoginForm
+export default RegisterForm
