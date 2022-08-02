@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 // Database
 import { FirebaseError } from '../../Globals/Firebase'
@@ -18,24 +18,10 @@ const initialState = {
 
 const LoginForm: React.FC = () => {
   //
-  const { authedUser, loginUser } = useAuth()
-
-  //
-  const [logged, setLogged] = useState(false)
+  const { loginUser } = useAuth()
 
   //
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (authedUser) {
-      setLogged(!logged)
-    }
-
-    if (logged) {
-      toast.error('User Authenticated; Redirecting to /dashboard')
-      navigate('dashboard')
-    }
-  }, [logged])
 
   //
   const [form, setForm] = useState(initialState)
@@ -58,7 +44,7 @@ const LoginForm: React.FC = () => {
     try {
       await loginUser(email, password)
       toast.success('login: login successful')
-      navigate('dashboard')
+      navigate('/dashboard')
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         toast.error(error.code, {

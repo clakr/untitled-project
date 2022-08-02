@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 // Backend
 import { FirebaseError } from '../../Globals/Firebase'
@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom'
 
 // Components
 import { FormInput, Button, LinkCustom } from '../../Globals/Components'
-import toast from 'react-hot-toast'
 
 const initialState = {
   email: '',
@@ -18,17 +17,11 @@ const initialState = {
 
 const RegisterForm: React.FC = () => {
   //
-  const { authedUser, createUser } = useAuth()
+  const { createUser } = useAuth()
 
   //
+  //
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (authedUser) {
-      navigate('/dashboard')
-      toast.error('redirected')
-    }
-  }, [])
 
   //
   const [form, setForm] = useState(initialState)
@@ -50,7 +43,7 @@ const RegisterForm: React.FC = () => {
 
     try {
       await createUser(email, password)
-      navigate('dashboard')
+      navigate('/dashboard')
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         console.log('cause: ', error.cause)
