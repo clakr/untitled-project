@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { auth, FirebaseError } from './Firebase'
+import { auth, firestore, FirebaseError } from './Firebase'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,6 +8,7 @@ import {
   UserCredential,
   signOut
 } from 'firebase/auth'
+import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
 import toast from 'react-hot-toast'
 
 interface propInterface {
@@ -16,10 +17,11 @@ interface propInterface {
 
 interface contextInterface {
   authedUser: User | null | undefined
-  createUser: (email: string, password: string) => Promise<UserCredential>
+  createUser: (email: string, password: string) => Promise<void>
   loginUser: (email: string, password: string) => Promise<UserCredential>
   logoutUser: () => Promise<void>
   showError: (error: FirebaseError) => void
+  getUser: () => Promise<DocumentData | undefined>
 }
 
 const AuthContext = createContext<contextInterface>({} as contextInterface)
@@ -33,8 +35,30 @@ const AuthProvider = ({ children }: propInterface) => {
   const [authedUser, setAuthedUser] = useState<User | null>()
   const [loading, setLoading] = useState(true)
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setAuthedUser(user)
+      setLoading(false)
+    })
+
+    return unsubscribe
+  }, [])
+
   const createUser = (email: string, password: string) => {
-    return createUserWithEmailAndPassword(auth, email, password)
+    return createUserWithEmailAndPassword(auth, email, password).then(
+      ({ user }) => {
+        const docRef = doc(firestore, 'users', user.uid)
+        setDoc(docRef, {
+          email: user.email,
+          qwe: 'asd'
+        })
+      },
+      (error) => {
+        toast.error(error, {
+          duration: 2000
+        })
+      }
+    )
   }
 
   const loginUser = (email: string, password: string) => {
@@ -51,21 +75,24 @@ const AuthProvider = ({ children }: propInterface) => {
     })
   }
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setAuthedUser(user)
-      setLoading(false)
-    })
-
-    return unsubscribe
-  }, [])
+  const getUser = async () => {
+    const docRef = doc(firestore, 'users', (authedUser as User).uid)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      const docData = docSnap.data()
+      return docData
+    } else {
+      throw new Error('User ID does not exist')
+    }
+  }
 
   const value = {
     authedUser,
     createUser,
     loginUser,
     logoutUser,
-    showError
+    showError,
+    getUser
   }
 
   return (

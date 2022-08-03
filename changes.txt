@@ -1,2 +1,7 @@
+# Created
+- getUser @ AuthContext.tsx
+
 # Refactored
-  - LoginForm and RegisterForm
+- No userId detected error handler in getUser @ dashboard/index.tsx 
+
+# Imported
