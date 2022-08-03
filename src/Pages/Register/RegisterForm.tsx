@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import toast from 'react-hot-toast'
 
 // Backend
-import { FirebaseError } from '../../Globals/Firebase'
 import { useAuth } from '../../Globals/AuthContext'
 
 // Components
@@ -16,7 +14,7 @@ const initialState = {
 
 const RegisterForm: React.FC = () => {
   //
-  const { createUser, showError } = useAuth()
+  const { createUser } = useAuth()
 
   //
   const navigate = useNavigate()
@@ -40,18 +38,10 @@ const RegisterForm: React.FC = () => {
     event.preventDefault()
 
     try {
-      const toastId = toast.loading('Waiting...')
       await createUser(email, password)
-      toast.success('Register Successful', {
-        id: toastId
-      })
       navigate('/dashboard')
-    } catch (error: unknown) {
-      showError(error as FirebaseError)
-      return
-    }
-
-    setForm(initialState)
+      setForm(initialState)
+    } catch (error) {}
   }
 
   return (

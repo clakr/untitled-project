@@ -45,24 +45,34 @@ const AuthProvider = ({ children }: propInterface) => {
   }, [])
 
   const createUser = (email: string, password: string) => {
-    return createUserWithEmailAndPassword(auth, email, password).then(
+    const promise = createUserWithEmailAndPassword(auth, email, password).then(
       ({ user }) => {
         const docRef = doc(firestore, 'users', user.uid)
         setDoc(docRef, {
-          email: user.email,
-          qwe: 'asd'
-        })
-      },
-      (error) => {
-        toast.error(error, {
-          duration: 2000
+          email: user.email
         })
       }
     )
+
+    toast.promise(promise, {
+      loading: 'Loading...',
+      success: 'Register Success',
+      error: (error) => error.code
+    })
+
+    return promise
   }
 
   const loginUser = (email: string, password: string) => {
-    return signInWithEmailAndPassword(auth, email, password)
+    const promise = signInWithEmailAndPassword(auth, email, password)
+
+    toast.promise(promise, {
+      loading: 'Loading...',
+      success: 'Login Success',
+      error: (error) => error.code
+    })
+
+    return promise
   }
 
   const logoutUser = () => {
@@ -77,13 +87,15 @@ const AuthProvider = ({ children }: propInterface) => {
 
   const getUser = async () => {
     const docRef = doc(firestore, 'users', (authedUser as User).uid)
-    const docSnap = await getDoc(docRef)
-    if (docSnap.exists()) {
-      const docData = docSnap.data()
-      return docData
-    } else {
-      throw new Error('User ID does not exist')
-    }
+    const docData = await getDoc(docRef).then(
+      (data) => {
+        return data.data()
+      },
+      () => {
+        throw new Error('User ID does not exist')
+      }
+    )
+    return docData
   }
 
   const value = {

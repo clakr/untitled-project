@@ -10,7 +10,7 @@ import { DocumentData } from 'firebase/firestore'
 
 const Dashboard = () => {
   //
-  const { logoutUser, showError, getUser } = useAuth()
+  const { logoutUser, getUser } = useAuth()
 
   //
   const [user, setUser] = useState<DocumentData | undefined>({})

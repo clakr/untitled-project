@@ -1,7 +1,10 @@
+> COMMIT
+
 # Created
-- getUser @ AuthContext.tsx
 
 # Refactored
-- No userId detected error handler in getUser @ dashboard/index.tsx 
+- loginUser @ AuthContext.tsx & loginForm.tsx
+- createUser @ AuthContext.tsx & registerForm.tsx
+- getUser @ AuthContext.tsx
 
 # Imported
