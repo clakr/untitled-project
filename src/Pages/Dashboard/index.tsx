@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { DocumentData } from 'firebase/firestore'
 
 // Context
 import { useAuth } from '../../Globals/AuthContext'
 
 // Components
-import toast from 'react-hot-toast'
-import { DocumentData } from 'firebase/firestore'
+import { useLoading } from '../../Routes/UserRoute'
 
 const Dashboard = () => {
   //
@@ -14,6 +15,9 @@ const Dashboard = () => {
 
   //
   const [user, setUser] = useState<DocumentData | undefined>({})
+
+  //
+  const { loading, setLoading } = useLoading()
 
   //
   const [error, setError] = useState(false)
@@ -28,6 +32,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
+    setLoading(true)
     const getUserData = async () => {
       try {
         const data = await getUser()
@@ -38,6 +43,7 @@ const Dashboard = () => {
       } catch (error: unknown) {
         setError(true)
       }
+      setLoading(false)
     }
 
     getUserData()
@@ -52,10 +58,10 @@ const Dashboard = () => {
 
   return (
     <>
-      {user && (
+      {!loading && (
         <div className="flex flex-col">
-          <h1>UID: {user.qwe}</h1>
-          <h2>Email: {user.email}</h2>
+          <h1>UID: {user?.qwe}</h1>
+          <h2>Email: {user?.email}</h2>
           <button onClick={handleLogout}>Logout</button>
         </div>
       )}

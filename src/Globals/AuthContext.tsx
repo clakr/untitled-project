@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { auth, firestore, FirebaseError } from './Firebase'
+import toast from 'react-hot-toast'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -9,8 +9,8 @@ import {
   signOut
 } from 'firebase/auth'
 import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
-import toast from 'react-hot-toast'
 
+import { auth, firestore, FirebaseError } from './Firebase'
 interface propInterface {
   children: JSX.Element
 }

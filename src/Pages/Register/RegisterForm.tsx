@@ -23,6 +23,9 @@ const RegisterForm: React.FC = () => {
   const [form, setForm] = useState(initialState)
   const { email, password } = form
 
+  //
+  const [loading, setLoading] = useState(false)
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const {
       currentTarget: { name, value }
@@ -36,12 +39,15 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setLoading(true)
 
     try {
       await createUser(email, password)
       navigate('/dashboard')
       setForm(initialState)
     } catch (error) {}
+
+    setLoading(false)
   }
 
   return (
@@ -49,7 +55,7 @@ const RegisterForm: React.FC = () => {
       className="grid place-items-center lg:flex-1"
       onSubmit={(event) => handleSubmit(event)}
     >
-      <div className="flex min-w-full flex-col justify-center gap-y-8 lg:min-w-[500px] lg:rounded-3xl lg:border lg:border-gray-50 lg:bg-white lg:p-6 lg:shadow-2xl lg:shadow-gray-300">
+      <div className="flex min-w-full flex-col justify-center gap-y-6 lg:min-w-[500px] lg:rounded-3xl lg:border lg:border-gray-50 lg:bg-white lg:p-6 lg:shadow-2xl lg:shadow-gray-300">
         <div className="lg:space-y-2">
           {/* Header */}
           <h1 className="font-serif text-3xl font-bold lg:text-4xl">
@@ -88,6 +94,7 @@ const RegisterForm: React.FC = () => {
           focusColor="focus:outline-blue-600"
           padding="py-2"
           value="Register"
+          loading={loading}
         />
 
         {/* Create an account */}

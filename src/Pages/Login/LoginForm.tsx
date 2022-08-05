@@ -23,6 +23,9 @@ const LoginForm: React.FC = () => {
   const [form, setForm] = useState(initialState)
   const { email, password } = form
 
+  //
+  const [loading, setLoading] = useState(false)
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const {
       currentTarget: { name, value }
@@ -36,12 +39,15 @@ const LoginForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setLoading(true)
 
     try {
       await loginUser(email, password)
       navigate('/dashboard')
       setForm(initialState)
     } catch (error) {}
+
+    setLoading(false)
   }
 
   return (
@@ -111,6 +117,7 @@ const LoginForm: React.FC = () => {
             focusColor="focus:outline-blue-600"
             padding="py-2"
             value="Log in"
+            loading={loading}
           />
 
           {/* Create an account */}

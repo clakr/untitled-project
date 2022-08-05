@@ -1,10 +1,8 @@
 > COMMIT
 
 # Created
+- Loading state for /dashboard
 
 # Refactored
-- loginUser @ AuthContext.tsx & loginForm.tsx
-- createUser @ AuthContext.tsx & registerForm.tsx
-- getUser @ AuthContext.tsx
 
 # Imported

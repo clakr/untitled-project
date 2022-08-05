@@ -1,5 +1,7 @@
 import React from 'react'
 
+import LoadingIcon from '../../Globals/Assets/Loading.svg'
+
 interface PropInterface {
   value: string
   type: 'submit' | 'reset' | 'button' | undefined
@@ -7,6 +9,7 @@ interface PropInterface {
   hoverColor: string
   focusColor: string
   padding: string
+  loading?: boolean
 }
 
 const Button: React.FC<PropInterface> = ({
@@ -15,14 +18,17 @@ const Button: React.FC<PropInterface> = ({
   bgColor,
   hoverColor,
   focusColor,
-  padding
+  padding,
+  loading
 }) => {
   return (
     <button
       type={type}
-      className={`rounded-md text-gray-50 transition-colors duration-200 ${bgColor} ${hoverColor} ${focusColor} ${padding}`}
+      className={`flex justify-center rounded-md text-gray-50 transition-colors duration-200 ${bgColor} ${hoverColor} ${focusColor} ${padding}`}
+      disabled={loading}
     >
-      {value}
+      <span className={`${loading ? 'hidden' : ''}`}>{value}</span>
+      <img src={LoadingIcon} alt="" className={`${loading ? 'w-6' : 'w-0'}`} />
     </button>
   )
 }

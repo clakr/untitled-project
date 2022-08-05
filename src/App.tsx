@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 
 // Route
@@ -10,7 +10,7 @@ import { Login, Register, Dashboard } from './Pages'
 
 const App = () => {
   return (
-    <>
+    <BrowserRouter>
       <Routes>
         <Route element={<InitialRoute />}>
           <Route path="/" element={<Login />} />
@@ -21,7 +21,7 @@ const App = () => {
         </Route>
       </Routes>
       <Toaster />
-    </>
+    </BrowserRouter>
   )
 }
 
