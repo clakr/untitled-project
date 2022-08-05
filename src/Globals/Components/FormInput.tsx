@@ -4,6 +4,7 @@ import React from 'react'
 import { toSentenceCase } from '../Utilities'
 
 interface PropsInterface {
+  labelName: string
   inputName: string
   inputType: string
   placeholder: string
@@ -12,6 +13,7 @@ interface PropsInterface {
 }
 
 const FormInput: React.FC<PropsInterface> = ({
+  labelName,
   inputName,
   inputType,
   placeholder,
@@ -20,8 +22,8 @@ const FormInput: React.FC<PropsInterface> = ({
 }) => {
   return (
     <div className="flex flex-col gap-y-1">
-      <label htmlFor={inputName} className="px-3">
-        {toSentenceCase(inputName)}
+      <label htmlFor={inputName} className="px-3 font-medium">
+        {toSentenceCase(labelName)}
       </label>
       <input
         type={inputType}

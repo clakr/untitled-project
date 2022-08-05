@@ -1,30 +1,40 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Stepper } from '@mantine/core'
+import {
+  faUserPlus,
+  faCircleCheck,
+  faIdCard,
+  faEnvelopeOpen
+} from '@fortawesome/free-solid-svg-icons'
 
-// Backend
 import { useAuth } from '../../Globals/AuthContext'
-
-// Components
 import { FormInput, Button, LinkCustom } from '../../Globals/Components'
+import StepperIcon from './StepperIcon'
+import StepperNavigationButtons from './StepperNavigationButtons'
 
 const initialState = {
   email: '',
-  password: ''
+  password: '',
+  confirmPassword: ''
 }
 
 const RegisterForm: React.FC = () => {
-  //
+  // AuthContext.tsx
   const { createUser } = useAuth()
 
-  //
+  // Form States
+  const [form, setForm] = useState(initialState)
+  const { email, password, confirmPassword } = form
+  const [stepperActive, setStepperActive] = useState(0)
+  const [loading, setLoading] = useState(false)
+
   const navigate = useNavigate()
 
-  //
-  const [form, setForm] = useState(initialState)
-  const { email, password } = form
-
-  //
-  const [loading, setLoading] = useState(false)
+  const nextStep = () =>
+    setStepperActive((current) => (current < 3 ? current + 1 : current))
+  const prevStep = () =>
+    setStepperActive((current) => (current > 0 ? current - 1 : current))
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const {
@@ -68,23 +78,81 @@ const RegisterForm: React.FC = () => {
           </h2>
         </div>
 
-        {/* Inputs */}
-        <div className="space-y-4">
-          <FormInput
-            inputName="email"
-            inputType="email"
-            placeholder="juandelacruz@gmail.com"
-            onChange={handleChange}
-            value={email}
-          />
-          <FormInput
-            inputName="password"
-            inputType="password"
-            placeholder="********"
-            onChange={handleChange}
-            value={password}
-          />
-        </div>
+        <Stepper
+          active={stepperActive}
+          onStepClick={setStepperActive}
+          orientation="vertical"
+          contentPadding="xs"
+          completedIcon={
+            <StepperIcon
+              icon={faCircleCheck}
+              size="lg"
+              className="text-white"
+            />
+          }
+          classNames={{
+            root: 'flex gap-x-6',
+            content: 'p-0 flex-1 flex flex-col justify-center'
+          }}
+        >
+          <Stepper.Step
+            icon={<StepperIcon icon={faUserPlus} />}
+            progressIcon={
+              <StepperIcon icon={faUserPlus} className="text-blue-500" />
+            }
+          >
+            {/* Inputs */}
+            <div className="space-y-4">
+              <FormInput
+                labelName="email"
+                inputName="email"
+                inputType="email"
+                placeholder="juandelacruz@gmail.com"
+                onChange={handleChange}
+                value={email}
+              />
+              <FormInput
+                labelName="password"
+                inputName="password"
+                inputType="password"
+                placeholder="********"
+                onChange={handleChange}
+                value={password}
+              />
+              <FormInput
+                labelName="confirm password"
+                inputName="confirmPassword"
+                inputType="password"
+                placeholder="********"
+                onChange={handleChange}
+                value={confirmPassword}
+              />
+              <StepperNavigationButtons
+                prevStep={prevStep}
+                nextStep={nextStep}
+              />
+            </div>
+          </Stepper.Step>
+          <Stepper.Step
+            icon={<StepperIcon icon={faIdCard} />}
+            progressIcon={
+              <StepperIcon icon={faIdCard} className="text-blue-500" />
+            }
+          >
+            <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
+          </Stepper.Step>
+          <Stepper.Step
+            icon={<StepperIcon icon={faEnvelopeOpen} />}
+            progressIcon={
+              <StepperIcon icon={faEnvelopeOpen} className="text-blue-500" />
+            }
+          >
+            <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
+          </Stepper.Step>
+          <Stepper.Completed>
+            Completed, click back button to get to previous step
+          </Stepper.Completed>
+        </Stepper>
 
         {/* Submit Button */}
         <Button
@@ -92,7 +160,6 @@ const RegisterForm: React.FC = () => {
           bgColor="bg-blue-400"
           hoverColor="hover:bg-blue-600"
           focusColor="focus:outline-blue-600"
-          padding="py-2"
           value="Register"
           loading={loading}
         />

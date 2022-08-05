@@ -1,8 +1,8 @@
 > COMMIT
 
 # Created
-- Loading state for /dashboard
 
 # Refactored
 
 # Imported
+- Mantine
