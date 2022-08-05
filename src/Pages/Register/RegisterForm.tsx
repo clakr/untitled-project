@@ -12,6 +12,7 @@ import { useAuth } from '../../Globals/AuthContext'
 import { FormInput, Button, LinkCustom } from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
 import StepperNavigationButtons from './StepperNavigationButtons'
+import FormWrapper from '../../Globals/Components/FormWrapper'
 
 const initialState = {
   email: '',
@@ -65,7 +66,7 @@ const RegisterForm: React.FC = () => {
       className="grid place-items-center lg:flex-1"
       onSubmit={(event) => handleSubmit(event)}
     >
-      <div className="flex min-w-full flex-col justify-center gap-y-6 lg:min-w-[500px] lg:rounded-3xl lg:border lg:border-gray-50 lg:bg-white lg:p-6 lg:shadow-2xl lg:shadow-gray-300">
+      <FormWrapper>
         <div className="lg:space-y-2">
           {/* Header */}
           <h1 className="font-serif text-3xl font-bold lg:text-4xl">
@@ -112,22 +113,24 @@ const RegisterForm: React.FC = () => {
                 onChange={handleChange}
                 value={email}
               />
-              <FormInput
-                labelName="password"
-                inputName="password"
-                inputType="password"
-                placeholder="********"
-                onChange={handleChange}
-                value={password}
-              />
-              <FormInput
-                labelName="confirm password"
-                inputName="confirmPassword"
-                inputType="password"
-                placeholder="********"
-                onChange={handleChange}
-                value={confirmPassword}
-              />
+              <div className="flex flex-col gap-y-4 sm:gap-x-4 md:flex-row lg:flex-col xl:flex-row">
+                <FormInput
+                  labelName="password"
+                  inputName="password"
+                  inputType="password"
+                  placeholder="********"
+                  onChange={handleChange}
+                  value={password}
+                />
+                <FormInput
+                  labelName="confirm password"
+                  inputName="confirmPassword"
+                  inputType="password"
+                  placeholder="********"
+                  onChange={handleChange}
+                  value={confirmPassword}
+                />
+              </div>
               <StepperNavigationButtons
                 prevStep={prevStep}
                 nextStep={nextStep}
@@ -179,7 +182,7 @@ const RegisterForm: React.FC = () => {
             value="Sign in an account."
           />
         </h3>
-      </div>
+      </FormWrapper>
     </form>
   )
 }

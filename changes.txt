@@ -1,13 +1,12 @@
 > COMMIT
 
 # Created
+- FormWrapper.tsx
 
 # Refactored
-- Added 'allowStepSelect' property for every <Stepper.Step> @ RegisterForm.tsx
-- 
+- RegisterForm.tsx and LoginForm.tsx
 
 # Imported
-- Mantine
 
 ## TODO
 - Form Steppers 2 and 3

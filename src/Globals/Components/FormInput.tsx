@@ -21,7 +21,7 @@ const FormInput: React.FC<PropsInterface> = ({
   value
 }) => {
   return (
-    <div className="flex flex-col gap-y-1">
+    <div className="flex flex-1 flex-col gap-y-1">
       <label htmlFor={inputName} className="px-3 font-medium">
         {toSentenceCase(labelName)}
       </label>

@@ -6,6 +6,7 @@ import { useAuth } from '../../Globals/AuthContext'
 
 // Components
 import { FormInput, Button, LinkCustom } from '../../Globals/Components'
+import FormWrapper from '../../Globals/Components/FormWrapper'
 
 const initialState = {
   email: '',
@@ -56,7 +57,7 @@ const LoginForm: React.FC = () => {
         className="grid place-items-center lg:flex-1"
         onSubmit={(event) => handleSubmit(event)}
       >
-        <div className="flex min-w-full flex-col justify-center gap-y-8 lg:min-w-[500px] lg:rounded-3xl lg:border lg:border-gray-50 lg:bg-white lg:p-6 lg:shadow-2xl lg:shadow-gray-300">
+        <FormWrapper>
           <div className="lg:space-y-2">
             {/* Header */}
             <h1 className="font-serif text-3xl font-bold lg:text-4xl">
@@ -72,6 +73,7 @@ const LoginForm: React.FC = () => {
           {/* Inputs */}
           <div className="space-y-4">
             <FormInput
+              labelName="email"
               inputName="email"
               inputType="email"
               placeholder="juandelacruz@gmail.com"
@@ -79,6 +81,7 @@ const LoginForm: React.FC = () => {
               value={email}
             />
             <FormInput
+              labelName="password"
               inputName="password"
               inputType="password"
               placeholder="********"
@@ -115,7 +118,6 @@ const LoginForm: React.FC = () => {
             bgColor="bg-blue-400"
             hoverColor="hover:bg-blue-600"
             focusColor="focus:outline-blue-600"
-            padding="py-2"
             value="Log in"
             loading={loading}
           />
@@ -131,7 +133,7 @@ const LoginForm: React.FC = () => {
               value="Create an account."
             />
           </h3>
-        </div>
+        </FormWrapper>
       </form>
     </>
   )
