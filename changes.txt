@@ -3,6 +3,12 @@
 # Created
 
 # Refactored
+- Added 'allowStepSelect' property for every <Stepper.Step> @ RegisterForm.tsx
+- 
 
 # Imported
 - Mantine
+
+## TODO
+- Form Steppers 2 and 3
+- Form Validation through @mantine/form

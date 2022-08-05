@@ -91,7 +91,7 @@ const RegisterForm: React.FC = () => {
             />
           }
           classNames={{
-            root: 'flex gap-x-6',
+            root: 'flex gap-x-8',
             content: 'p-0 flex-1 flex flex-col justify-center'
           }}
         >
@@ -100,6 +100,7 @@ const RegisterForm: React.FC = () => {
             progressIcon={
               <StepperIcon icon={faUserPlus} className="text-blue-500" />
             }
+            allowStepSelect={stepperActive > 0}
           >
             {/* Inputs */}
             <div className="space-y-4">
@@ -138,6 +139,7 @@ const RegisterForm: React.FC = () => {
             progressIcon={
               <StepperIcon icon={faIdCard} className="text-blue-500" />
             }
+            allowStepSelect={stepperActive > 1}
           >
             <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
           </Stepper.Step>
@@ -146,11 +148,13 @@ const RegisterForm: React.FC = () => {
             progressIcon={
               <StepperIcon icon={faEnvelopeOpen} className="text-blue-500" />
             }
+            allowStepSelect={stepperActive > 2}
           >
             <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
           </Stepper.Step>
           <Stepper.Completed>
-            Completed, click back button to get to previous step
+            completed
+            <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
           </Stepper.Completed>
         </Stepper>
 
