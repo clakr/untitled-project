@@ -1,13 +1,13 @@
 > COMMIT
 
 # Created
-- FormWrapper.tsx
 
 # Refactored
-- RegisterForm.tsx and LoginForm.tsx
+- all useState hooks
 
 # Imported
 
 ## TODO
-- Form Steppers 2 and 3
+- Use Mantine Forms for LoginForm.tsx & RegisterForm.tsx
 - Form Validation through @mantine/form
+- Form Steppers 2 and 3

@@ -11,11 +11,12 @@ import {
 import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
 
 import { auth, firestore, FirebaseError } from './Firebase'
-interface propInterface {
+
+interface PropInterface {
   children: JSX.Element
 }
 
-interface contextInterface {
+interface ContextInferface {
   authedUser: User | null | undefined
   createUser: (email: string, password: string) => Promise<void>
   loginUser: (email: string, password: string) => Promise<UserCredential>
@@ -24,16 +25,15 @@ interface contextInterface {
   getUser: () => Promise<DocumentData | undefined>
 }
 
-const AuthContext = createContext<contextInterface>({} as contextInterface)
+const AuthContext = createContext<ContextInferface>({} as ContextInferface)
 
 export const useAuth = () => {
   return useContext(AuthContext)
 }
 
-const AuthProvider = ({ children }: propInterface) => {
-  //
+const AuthProvider: React.FC<PropInterface> = ({ children }) => {
   const [authedUser, setAuthedUser] = useState<User | null>()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

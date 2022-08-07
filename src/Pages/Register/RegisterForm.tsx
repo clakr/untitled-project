@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stepper } from '@mantine/core'
+import { Stepper, TextInput } from '@mantine/core'
+import { useForm } from '@mantine/form'
 import {
   faUserPlus,
   faCircleCheck,
@@ -9,26 +10,45 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useAuth } from '../../Globals/AuthContext'
-import { FormInput, Button, LinkCustom } from '../../Globals/Components'
+import {
+  FormInput,
+  Button,
+  LinkCustom,
+  FormWrapper
+} from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
 import StepperNavigationButtons from './StepperNavigationButtons'
-import FormWrapper from '../../Globals/Components/FormWrapper'
 
-const initialState = {
+type FormValuesType = {
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+const initialValues: FormValuesType = {
   email: '',
   password: '',
   confirmPassword: ''
 }
 
 const RegisterForm: React.FC = () => {
-  // AuthContext.tsx
   const { createUser } = useAuth()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  // const [form, setForm] = useState<FormValuesType>(initialState)
+  // const { email, password, confirmPassword } = form
+  const [stepperActive, setStepperActive] = useState<number>(0)
 
-  // Form States
-  const [form, setForm] = useState(initialState)
-  const { email, password, confirmPassword } = form
-  const [stepperActive, setStepperActive] = useState(0)
-  const [loading, setLoading] = useState(false)
+  const mForm = useForm({
+    initialValues,
+
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      password: (value) =>
+        value.length < 8 ? 'must be atleast 8 characters' : null
+    },
+
+    validateInputOnChange: true
+  })
 
   const navigate = useNavigate()
 
@@ -37,34 +57,34 @@ const RegisterForm: React.FC = () => {
   const prevStep = () =>
     setStepperActive((current) => (current > 0 ? current - 1 : current))
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const {
-      currentTarget: { name, value }
-    } = event
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  //   const {
+  //     currentTarget: { name, value }
+  //   } = event
 
-    setForm({
-      ...form,
-      [name]: value
-    })
-  }
+  //   setForm({
+  //     ...form,
+  //     [name]: value
+  //   })
+  // }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setLoading(true)
+  // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault()
+  //   // setIsLoading(true)
 
-    try {
-      await createUser(email, password)
-      navigate('/dashboard')
-      setForm(initialState)
-    } catch (error) {}
+  //   // try {
+  //   //   await createUser(email, password)
+  //   //   navigate('/dashboard')
+  //   //   setForm(initialState)
+  //   // } catch (error) {}
 
-    setLoading(false)
-  }
+  //   // setIsLoading(false)
+  // }
 
   return (
     <form
       className="grid place-items-center lg:flex-1"
-      onSubmit={(event) => handleSubmit(event)}
+      onSubmit={mForm.onSubmit((values) => console.log(values))}
     >
       <FormWrapper>
         <div className="lg:space-y-2">
@@ -96,6 +116,7 @@ const RegisterForm: React.FC = () => {
             content: 'p-0 flex-1 flex flex-col justify-center'
           }}
         >
+          {/* Stepper 1 */}
           <Stepper.Step
             icon={<StepperIcon icon={faUserPlus} />}
             progressIcon={
@@ -105,7 +126,18 @@ const RegisterForm: React.FC = () => {
           >
             {/* Inputs */}
             <div className="space-y-4">
-              <FormInput
+              <TextInput
+                label="Email"
+                placeholder="Email"
+                {...mForm.getInputProps('email')}
+              />
+              <TextInput
+                label="Password"
+                placeholder="Password"
+                {...mForm.getInputProps('password')}
+              />
+
+              {/* <FormInput
                 labelName="email"
                 inputName="email"
                 inputType="email"
@@ -130,13 +162,15 @@ const RegisterForm: React.FC = () => {
                   onChange={handleChange}
                   value={confirmPassword}
                 />
-              </div>
+              </div> */}
               <StepperNavigationButtons
                 prevStep={prevStep}
                 nextStep={nextStep}
               />
             </div>
           </Stepper.Step>
+
+          {/* Stepper 2 */}
           <Stepper.Step
             icon={<StepperIcon icon={faIdCard} />}
             progressIcon={
@@ -146,6 +180,8 @@ const RegisterForm: React.FC = () => {
           >
             <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
           </Stepper.Step>
+
+          {/* Stepper 3 */}
           <Stepper.Step
             icon={<StepperIcon icon={faEnvelopeOpen} />}
             progressIcon={
@@ -155,6 +191,8 @@ const RegisterForm: React.FC = () => {
           >
             <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
           </Stepper.Step>
+
+          {/* Stepper Last */}
           <Stepper.Completed>
             completed
             <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
@@ -168,7 +206,7 @@ const RegisterForm: React.FC = () => {
           hoverColor="hover:bg-blue-600"
           focusColor="focus:outline-blue-600"
           value="Register"
-          loading={loading}
+          isLoading={isLoading}
         />
 
         {/* Create an account */}

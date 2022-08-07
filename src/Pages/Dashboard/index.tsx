@@ -9,21 +9,12 @@ import { useAuth } from '../../Globals/AuthContext'
 // Components
 import { useLoading } from '../../Routes/UserRoute'
 
-const Dashboard = () => {
-  //
-  const { logoutUser, getUser } = useAuth()
-
-  //
-  const [user, setUser] = useState<DocumentData | undefined>({})
-
-  //
-  const { loading, setLoading } = useLoading()
-
-  //
-  const [error, setError] = useState(false)
-
-  //
+const Dashboard: React.FC = () => {
   const navigate = useNavigate()
+  const { logoutUser, getUser } = useAuth()
+  const { isLoading, setIsLoading } = useLoading()
+  const [error, setError] = useState<boolean>(false)
+  const [user, setUser] = useState<DocumentData | undefined>({})
 
   const handleLogout = async () => {
     await logoutUser()
@@ -32,7 +23,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    setLoading(true)
+    setIsLoading(true)
     const getUserData = async () => {
       try {
         const data = await getUser()
@@ -43,7 +34,7 @@ const Dashboard = () => {
       } catch (error: unknown) {
         setError(true)
       }
-      setLoading(false)
+      setIsLoading(false)
     }
 
     getUserData()
@@ -58,7 +49,7 @@ const Dashboard = () => {
 
   return (
     <>
-      {!loading && (
+      {!isLoading && (
         <div className="flex flex-col">
           <h1>UID: {user?.qwe}</h1>
           <h2>Email: {user?.email}</h2>

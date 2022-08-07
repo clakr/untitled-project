@@ -2,29 +2,23 @@ import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 
-// Context
 import { useAuth } from '../Globals/AuthContext'
 
-const InitialRoute = () => {
-  //
-  const { authedUser } = useAuth()
-
-  //
-  const [logged, setLogged] = useState(false)
-
-  //
+const InitialRoute: React.FC = () => {
   const navigate = useNavigate()
+  const { authedUser } = useAuth()
+  const [isLogged, setIsLogged] = useState<boolean>(false)
 
   useEffect(() => {
     if (authedUser) {
-      setLogged(!logged)
+      setIsLogged(true)
     }
 
-    if (logged) {
+    if (isLogged) {
       toast.error('User already Authenticated; Redirecting to /dashboard')
       navigate('/dashboard')
     }
-  }, [logged])
+  }, [isLogged])
 
   return (
     <>

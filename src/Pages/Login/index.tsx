@@ -1,9 +1,6 @@
 import React from 'react'
 
-// Components
 import LoginForm from './LoginForm'
-
-// Assets
 import loginImage from './login.svg'
 
 const Login: React.FC = () => {

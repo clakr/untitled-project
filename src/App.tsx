@@ -2,13 +2,10 @@ import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 
-// Route
 import { InitialRoute, UserRoute } from './Routes'
-
-// Components
 import { Login, Register, Dashboard } from './Pages'
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>

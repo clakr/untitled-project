@@ -9,7 +9,7 @@ interface PropInterface {
   hoverColor: string
   focusColor: string
   className?: string
-  loading?: boolean
+  isLoading?: boolean
   onClick?: () => void
 }
 
@@ -20,18 +20,22 @@ const Button: React.FC<PropInterface> = ({
   hoverColor,
   focusColor,
   className,
-  loading,
+  isLoading,
   onClick
 }) => {
   return (
     <button
       type={type}
       className={`flex justify-center rounded-md py-2 text-gray-50 transition-colors duration-200 ${bgColor} ${hoverColor} ${focusColor} ${className}`}
-      disabled={loading}
+      disabled={isLoading}
       onClick={onClick}
     >
-      <span className={`${loading ? 'hidden' : ''}`}>{value}</span>
-      <img src={LoadingIcon} alt="" className={`${loading ? 'w-6' : 'w-0'}`} />
+      <span className={`${isLoading ? 'hidden' : ''}`}>{value}</span>
+      <img
+        src={LoadingIcon}
+        alt=""
+        className={`${isLoading ? 'w-6' : 'w-0'}`}
+      />
     </button>
   )
 }

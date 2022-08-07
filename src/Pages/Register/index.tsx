@@ -1,9 +1,6 @@
 import React from 'react'
 
-// Components
 import RegisterForm from './RegisterForm'
-
-// Assets
 import registerImage from './register.svg'
 
 const Register = () => {

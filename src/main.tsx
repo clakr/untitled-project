@@ -1,10 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-// Context
 import AuthProvider from './Globals/AuthContext'
-
-// Components
 import App from './App'
 import './index.css'
 

@@ -1,31 +1,26 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-// Database
 import { useAuth } from '../../Globals/AuthContext'
-
-// Components
 import { FormInput, Button, LinkCustom } from '../../Globals/Components'
 import FormWrapper from '../../Globals/Components/FormWrapper'
 
-const initialState = {
+type FormValuesType = {
+  email: string
+  password: string
+}
+
+const initialState: FormValuesType = {
   email: '',
   password: ''
 }
 
 const LoginForm: React.FC = () => {
-  //
-  const { loginUser } = useAuth()
-
-  //
   const navigate = useNavigate()
-
-  //
-  const [form, setForm] = useState(initialState)
+  const { loginUser } = useAuth()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [form, setForm] = useState<FormValuesType>(initialState)
   const { email, password } = form
-
-  //
-  const [loading, setLoading] = useState(false)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const {
@@ -40,7 +35,7 @@ const LoginForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setLoading(true)
+    setIsLoading(true)
 
     try {
       await loginUser(email, password)
@@ -48,7 +43,7 @@ const LoginForm: React.FC = () => {
       setForm(initialState)
     } catch (error) {}
 
-    setLoading(false)
+    setIsLoading(false)
   }
 
   return (
@@ -119,7 +114,7 @@ const LoginForm: React.FC = () => {
             hoverColor="hover:bg-blue-600"
             focusColor="focus:outline-blue-600"
             value="Log in"
-            loading={loading}
+            isLoading={isLoading}
           />
 
           {/* Create an account */}

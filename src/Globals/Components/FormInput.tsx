@@ -3,16 +3,16 @@ import React from 'react'
 // Helpers
 import { toSentenceCase } from '../Utilities'
 
-interface PropsInterface {
+interface PropInterface {
   labelName: string
   inputName: string
   inputType: string
+  value: string
   placeholder: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  value: string
 }
 
-const FormInput: React.FC<PropsInterface> = ({
+const FormInput: React.FC<PropInterface> = ({
   labelName,
   inputName,
   inputType,

@@ -9,44 +9,37 @@ import { useAuth } from '../Globals/AuthContext'
 import LoadingPageIcon from '../Globals/Assets/LoadingPage.svg'
 
 interface LoadingContextInterface {
-  loading: boolean
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  isLoading: boolean
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const UserRoute = () => {
-  //
-  const { authedUser } = useAuth()
-
-  //
-  const [logged, setLogged] = useState(true)
-
-  //
-  const [loading, setLoading] = useState<boolean>(false)
-
-  //
+const UserRoute: React.FC = () => {
   const navigate = useNavigate()
+  const { authedUser } = useAuth()
+  const [isLogged, setIsLogged] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (authedUser === null || authedUser === undefined) {
-      setLogged(!logged)
+      setIsLogged(false)
     }
 
-    if (!logged) {
+    if (!isLogged) {
       toast.error('User Unauthenticated')
       navigate('/')
     }
-  }, [logged])
+  }, [isLogged])
 
   return (
     <>
       <div
         className={`${
-          loading ? 'flex h-screen items-center justify-center' : 'hidden'
+          isLoading ? 'flex h-screen items-center justify-center' : 'hidden'
         }`}
       >
         <img src={LoadingPageIcon} alt="" className="w-80" />
       </div>
-      <Outlet context={{ loading, setLoading }} />
+      <Outlet context={{ isLoading, setIsLoading }} />
     </>
   )
 }
