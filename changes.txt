@@ -3,7 +3,7 @@
 # Created
 
 # Refactored
-- Migrated to Mantine Forms
+- EmailPassword and FullName Forms to be RFC
 
 # Imported
 
