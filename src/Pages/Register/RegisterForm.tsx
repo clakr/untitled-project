@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stepper, TextInput } from '@mantine/core'
+import { Stepper, TextInput, PasswordInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import {
   faUserPlus,
@@ -10,12 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useAuth } from '../../Globals/AuthContext'
-import {
-  FormInput,
-  Button,
-  LinkCustom,
-  FormWrapper
-} from '../../Globals/Components'
+import { LinkCustom, FormWrapper } from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
 import StepperNavigationButtons from './StepperNavigationButtons'
 
@@ -32,59 +27,45 @@ const initialValues: FormValuesType = {
 }
 
 const RegisterForm: React.FC = () => {
+  const navigate = useNavigate()
   const { createUser } = useAuth()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  // const [form, setForm] = useState<FormValuesType>(initialState)
-  // const { email, password, confirmPassword } = form
+  const [error, setError] = useState<boolean>(true)
   const [stepperActive, setStepperActive] = useState<number>(0)
 
-  const mForm = useForm({
+  const form = useForm({
     initialValues,
+    initialErrors: initialValues,
 
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      password: (value) =>
-        value.length < 8 ? 'must be atleast 8 characters' : null
+      email: (value) =>
+        /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value) ? null : 'Invalid email',
+      confirmPassword: (value, values) =>
+        value === values.password ? null : 'Passwords did not match'
     },
 
     validateInputOnChange: true
   })
-
-  const navigate = useNavigate()
 
   const nextStep = () =>
     setStepperActive((current) => (current < 3 ? current + 1 : current))
   const prevStep = () =>
     setStepperActive((current) => (current > 0 ? current - 1 : current))
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-  //   const {
-  //     currentTarget: { name, value }
-  //   } = event
-
-  //   setForm({
-  //     ...form,
-  //     [name]: value
-  //   })
-  // }
-
-  // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault()
-  //   // setIsLoading(true)
-
-  //   // try {
-  //   //   await createUser(email, password)
-  //   //   navigate('/dashboard')
-  //   //   setForm(initialState)
-  //   // } catch (error) {}
-
-  //   // setIsLoading(false)
-  // }
+  useEffect(() => {
+    if (Object.keys(form.errors).length === 0) {
+      setError(false)
+    }
+  }, [form.errors])
 
   return (
     <form
       className="grid place-items-center lg:flex-1"
-      onSubmit={mForm.onSubmit((values) => console.log(values))}
+      onSubmit={form.onSubmit(async ({ email, password }) => {
+        try {
+          await createUser(email, password)
+          navigate('/dashboard')
+        } catch (error) {}
+      })}
     >
       <FormWrapper>
         <div className="lg:space-y-2">
@@ -128,42 +109,36 @@ const RegisterForm: React.FC = () => {
             <div className="space-y-4">
               <TextInput
                 label="Email"
-                placeholder="Email"
-                {...mForm.getInputProps('email')}
-              />
-              <TextInput
-                label="Password"
-                placeholder="Password"
-                {...mForm.getInputProps('password')}
-              />
-
-              {/* <FormInput
-                labelName="email"
-                inputName="email"
-                inputType="email"
                 placeholder="juandelacruz@gmail.com"
-                onChange={handleChange}
-                value={email}
+                classNames={{ label: 'px-3' }}
+                required
+                {...form.getInputProps('email')}
               />
               <div className="flex flex-col gap-y-4 sm:gap-x-4 md:flex-row lg:flex-col xl:flex-row">
-                <FormInput
-                  labelName="password"
-                  inputName="password"
-                  inputType="password"
+                <PasswordInput
+                  label="Password"
                   placeholder="********"
-                  onChange={handleChange}
-                  value={password}
+                  classNames={{
+                    root: 'flex-1',
+                    label: 'px-3',
+                    description: 'px-3'
+                  }}
+                  required
+                  {...form.getInputProps('password')}
                 />
-                <FormInput
-                  labelName="confirm password"
-                  inputName="confirmPassword"
-                  inputType="password"
+                <PasswordInput
+                  label="Confirm Password"
                   placeholder="********"
-                  onChange={handleChange}
-                  value={confirmPassword}
+                  classNames={{
+                    root: 'flex-1',
+                    label: 'px-3'
+                  }}
+                  required
+                  {...form.getInputProps('confirmPassword')}
                 />
-              </div> */}
+              </div>
               <StepperNavigationButtons
+                error={error}
                 prevStep={prevStep}
                 nextStep={nextStep}
               />
@@ -178,7 +153,11 @@ const RegisterForm: React.FC = () => {
             }
             allowStepSelect={stepperActive > 1}
           >
-            <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
+            <StepperNavigationButtons
+              error={error}
+              prevStep={prevStep}
+              nextStep={nextStep}
+            />
           </Stepper.Step>
 
           {/* Stepper 3 */}
@@ -189,25 +168,33 @@ const RegisterForm: React.FC = () => {
             }
             allowStepSelect={stepperActive > 2}
           >
-            <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
+            <StepperNavigationButtons
+              error={error}
+              prevStep={prevStep}
+              nextStep={nextStep}
+            />
           </Stepper.Step>
 
           {/* Stepper Last */}
           <Stepper.Completed>
             completed
-            <StepperNavigationButtons prevStep={prevStep} nextStep={nextStep} />
+            <StepperNavigationButtons
+              error={error}
+              prevStep={prevStep}
+              nextStep={nextStep}
+            />
           </Stepper.Completed>
         </Stepper>
 
         {/* Submit Button */}
-        <Button
+        {/* <Button
           type="submit"
           bgColor="bg-blue-400"
           hoverColor="hover:bg-blue-600"
           focusColor="focus:outline-blue-600"
           value="Register"
           isLoading={isLoading}
-        />
+        /> */}
 
         {/* Create an account */}
         <h3 className=" text-center">

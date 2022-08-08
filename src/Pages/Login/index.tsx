@@ -14,12 +14,4 @@ const Login: React.FC = () => {
   )
 }
 
-// Colors
-
-// [ gray-50 ]
-// [ gray-300 ]
-// [ gray-400 ]
-// [ blue-400 ]
-// [ blue-500 ]
-
 export default Login

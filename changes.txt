@@ -3,7 +3,7 @@
 # Created
 
 # Refactored
-- all useState hooks
+- MantineProvider config to integrate with TailwindCSS
 
 # Imported
 
