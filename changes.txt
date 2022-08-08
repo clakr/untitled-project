@@ -3,11 +3,9 @@
 # Created
 
 # Refactored
-- MantineProvider config to integrate with TailwindCSS
+- Migrated to Mantine Forms
 
 # Imported
 
 ## TODO
-- Use Mantine Forms for LoginForm.tsx & RegisterForm.tsx
-- Form Validation through @mantine/form
 - Form Steppers 2 and 3

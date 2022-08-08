@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stepper, TextInput, PasswordInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { Stepper, TextInput, PasswordInput, Button } from '@mantine/core'
+import { useForm, UseFormReturnType } from '@mantine/form'
 import {
   faUserPlus,
   faCircleCheck,
@@ -12,12 +12,22 @@ import {
 import { useAuth } from '../../Globals/AuthContext'
 import { LinkCustom, FormWrapper } from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
-import StepperNavigationButtons from './StepperNavigationButtons'
 
 type FormValuesType = {
   email: string
   password: string
   confirmPassword: string
+}
+
+interface EmailPasswordFormInterface {
+  form: UseFormReturnType<FormValuesType>
+  error: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
+  setStepperActive: React.Dispatch<React.SetStateAction<number>>
+}
+
+interface StepperNavigationInterface {
+  error: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
+  setStepperActive: React.Dispatch<React.SetStateAction<number>>
 }
 
 const initialValues: FormValuesType = {
@@ -26,13 +36,103 @@ const initialValues: FormValuesType = {
   confirmPassword: ''
 }
 
+const nextStep = (setAction: React.Dispatch<React.SetStateAction<number>>) => {
+  setAction((current) => (current < 3 ? current + 1 : current))
+}
+
+const prevStep = (setAction: React.Dispatch<React.SetStateAction<number>>) =>
+  setAction((current) => (current > 0 ? current - 1 : current))
+
+const checkForFormErrors = (
+  form: UseFormReturnType<FormValuesType>,
+  setAction: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  if (Object.keys(form.errors).length === 0) {
+    setAction(false)
+  } else {
+    setAction(true)
+  }
+}
+
+const StepperNavigation: React.FC<StepperNavigationInterface> = ({
+  error: [error, setError],
+  setStepperActive
+}) => {
+  return (
+    <div className="flex justify-center gap-x-4 p-2">
+      <Button variant="default" onClick={() => prevStep(setStepperActive)}>
+        Back
+      </Button>
+      <Button
+        onClick={() => {
+          setError(true)
+          nextStep(setStepperActive)
+        }}
+        disabled={error}
+      >
+        Next Step
+      </Button>
+    </div>
+  )
+}
+
+const EmailPasswordForm: React.FC<EmailPasswordFormInterface> = ({
+  form,
+  error: [error, setError],
+  setStepperActive
+}) => {
+  useEffect(() => {
+    checkForFormErrors(form, setError)
+  }, [form.errors])
+
+  return (
+    <div className="space-y-4">
+      <TextInput
+        label="Email"
+        placeholder="juandelacruz@gmail.com"
+        classNames={{ label: 'px-3' }}
+        required
+        {...form.getInputProps('email')}
+      />
+      <div className="flex flex-col gap-y-4 sm:gap-x-4 md:flex-row lg:flex-col xl:flex-row">
+        <PasswordInput
+          label="Password"
+          placeholder="********"
+          classNames={{
+            root: 'flex-1',
+            label: 'px-3',
+            description: 'px-3'
+          }}
+          required
+          {...form.getInputProps('password')}
+        />
+        <PasswordInput
+          label="Confirm Password"
+          placeholder="********"
+          classNames={{
+            root: 'flex-1',
+            label: 'px-3'
+          }}
+          required
+          {...form.getInputProps('confirmPassword')}
+        />
+      </div>
+      {/* <Button onClick={() => prevStep(setStepperActive)}>qwe</Button> */}
+      <StepperNavigation
+        error={[error, setError]}
+        setStepperActive={setStepperActive}
+      />
+    </div>
+  )
+}
+
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate()
   const { createUser } = useAuth()
   const [error, setError] = useState<boolean>(true)
   const [stepperActive, setStepperActive] = useState<number>(0)
 
-  const form = useForm({
+  const mantineEmailPasswordForm = useForm({
     initialValues,
     initialErrors: initialValues,
 
@@ -46,26 +146,17 @@ const RegisterForm: React.FC = () => {
     validateInputOnChange: true
   })
 
-  const nextStep = () =>
-    setStepperActive((current) => (current < 3 ? current + 1 : current))
-  const prevStep = () =>
-    setStepperActive((current) => (current > 0 ? current - 1 : current))
-
-  useEffect(() => {
-    if (Object.keys(form.errors).length === 0) {
-      setError(false)
-    }
-  }, [form.errors])
-
   return (
     <form
       className="grid place-items-center lg:flex-1"
-      onSubmit={form.onSubmit(async ({ email, password }) => {
-        try {
-          await createUser(email, password)
-          navigate('/dashboard')
-        } catch (error) {}
-      })}
+      onSubmit={mantineEmailPasswordForm.onSubmit(
+        async ({ email, password }) => {
+          try {
+            await createUser(email, password)
+            navigate('/dashboard')
+          } catch (error) {}
+        }
+      )}
     >
       <FormWrapper>
         <div className="lg:space-y-2">
@@ -105,44 +196,11 @@ const RegisterForm: React.FC = () => {
             }
             allowStepSelect={stepperActive > 0}
           >
-            {/* Inputs */}
-            <div className="space-y-4">
-              <TextInput
-                label="Email"
-                placeholder="juandelacruz@gmail.com"
-                classNames={{ label: 'px-3' }}
-                required
-                {...form.getInputProps('email')}
-              />
-              <div className="flex flex-col gap-y-4 sm:gap-x-4 md:flex-row lg:flex-col xl:flex-row">
-                <PasswordInput
-                  label="Password"
-                  placeholder="********"
-                  classNames={{
-                    root: 'flex-1',
-                    label: 'px-3',
-                    description: 'px-3'
-                  }}
-                  required
-                  {...form.getInputProps('password')}
-                />
-                <PasswordInput
-                  label="Confirm Password"
-                  placeholder="********"
-                  classNames={{
-                    root: 'flex-1',
-                    label: 'px-3'
-                  }}
-                  required
-                  {...form.getInputProps('confirmPassword')}
-                />
-              </div>
-              <StepperNavigationButtons
-                error={error}
-                prevStep={prevStep}
-                nextStep={nextStep}
-              />
-            </div>
+            <EmailPasswordForm
+              form={mantineEmailPasswordForm}
+              error={[error, setError]}
+              setStepperActive={setStepperActive}
+            />
           </Stepper.Step>
 
           {/* Stepper 2 */}
@@ -153,10 +211,9 @@ const RegisterForm: React.FC = () => {
             }
             allowStepSelect={stepperActive > 1}
           >
-            <StepperNavigationButtons
-              error={error}
-              prevStep={prevStep}
-              nextStep={nextStep}
+            <StepperNavigation
+              error={[error, setError]}
+              setStepperActive={setStepperActive}
             />
           </Stepper.Step>
 
@@ -168,20 +225,18 @@ const RegisterForm: React.FC = () => {
             }
             allowStepSelect={stepperActive > 2}
           >
-            <StepperNavigationButtons
-              error={error}
-              prevStep={prevStep}
-              nextStep={nextStep}
+            <StepperNavigation
+              error={[error, setError]}
+              setStepperActive={setStepperActive}
             />
           </Stepper.Step>
 
           {/* Stepper Last */}
           <Stepper.Completed>
             completed
-            <StepperNavigationButtons
-              error={error}
-              prevStep={prevStep}
-              nextStep={nextStep}
+            <StepperNavigation
+              error={[error, setError]}
+              setStepperActive={setStepperActive}
             />
           </Stepper.Completed>
         </Stepper>
