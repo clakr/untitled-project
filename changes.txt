@@ -1,9 +1,9 @@
 > COMMIT
 
 # Created
+- Loading State while waiting for promise @ RegisterForm.tsx
 
 # Refactored
-- createUser() @ AuthContext.tsx
 
 # Imported
 

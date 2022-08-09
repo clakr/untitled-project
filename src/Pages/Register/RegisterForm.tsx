@@ -32,9 +32,9 @@ interface FormInterface<T> {
   secForm?: UseFormReturnType<EmailPasswordFormType>
 }
 
-interface StepperNavigationInterface<T> {
-  error: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
-  form: UseFormReturnType<T>
+interface StepperNavigationInterface {
+  error: boolean
+  loading?: boolean
   setStepperActive: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -76,24 +76,17 @@ const checkForFormErrors = <T, >(
   }
 }
 
-const StepperNavigation = <T, >({
-  error: [error, setError],
-  form,
+const StepperNavigation: React.FC<StepperNavigationInterface> = ({
+  error,
+  loading,
   setStepperActive
-}: StepperNavigationInterface<T>) => {
+}) => {
   return (
     <div className="flex justify-center gap-x-4 p-2">
       <Button variant="default" onClick={() => prevStep(setStepperActive)}>
         Back
       </Button>
-      <Button
-        type="submit"
-        // onClick={() => {
-        //   setError(true)
-        //   nextStep(setStepperActive)
-        // }}
-        disabled={error}
-      >
+      <Button type="submit" disabled={error} loading={loading}>
         Next Step
       </Button>
     </div>
@@ -121,8 +114,8 @@ const EmailPasswordForm: React.FC<FormInterface<EmailPasswordFormType>> = ({
         label="Email"
         placeholder="juandelacruz@gmail.com"
         classNames={{ label: 'px-3' }}
-        required
         autoComplete="on"
+        required
         {...form.getInputProps('email')}
       />
       <div className="flex flex-col gap-y-4 sm:gap-x-4 md:flex-row lg:flex-col xl:flex-row">
@@ -147,14 +140,11 @@ const EmailPasswordForm: React.FC<FormInterface<EmailPasswordFormType>> = ({
           }}
           autoComplete="on"
           required
+          disabled={form.values.password.length === 0}
           {...form.getInputProps('confirmPassword')}
         />
       </div>
-      <StepperNavigation
-        error={[error, setError]}
-        form={form}
-        setStepperActive={setStepperActive}
-      />
+      <StepperNavigation error={error} setStepperActive={setStepperActive} />
     </form>
   )
 }
@@ -167,6 +157,7 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
 }) => {
   const navigate = useNavigate()
   const { createUser } = useAuth()
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     checkForFormErrors(form, setError)
@@ -176,15 +167,15 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
     <form
       className="space-y-4"
       onSubmit={form.onSubmit(async (values) => {
-        console.log('form', JSON.stringify(values, null, 2))
-        console.log('secForm', JSON.stringify(secForm?.values, null, 2))
-
+        setLoading(true)
         if (secForm) {
           try {
             await createUser({ ...secForm.values, ...values })
             navigate('/dashboard')
           } catch (error) {}
         }
+
+        setLoading(false)
       })}
     >
       <div className="space-y-4">
@@ -214,8 +205,8 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
       </div>
 
       <StepperNavigation
-        error={[error, setError]}
-        form={form}
+        error={error}
+        loading={loading}
         setStepperActive={setStepperActive}
       />
     </form>
@@ -223,8 +214,6 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
 }
 
 const RegisterForm: React.FC = () => {
-  const navigate = useNavigate()
-  const { createUser } = useAuth()
   const [error, setError] = useState<boolean>(true)
   const [stepperActive, setStepperActive] = useState<number>(0)
 
@@ -239,7 +228,8 @@ const RegisterForm: React.FC = () => {
         value === values.password ? null : 'Passwords did not match'
     },
 
-    validateInputOnChange: true
+    validateInputOnChange: true,
+    clearInputErrorOnChange: false
   })
 
   const mantineNameForm = useForm({
@@ -250,17 +240,7 @@ const RegisterForm: React.FC = () => {
   })
 
   return (
-    <div
-      className="grid place-items-center lg:flex-1"
-      // onSubmit={mantineEmailPasswordForm.onSubmit(
-      //   async ({ email, password }) => {
-      //     try {
-      //       await createUser(email, password)
-      //       navigate('/dashboard')
-      //     } catch (error) {}
-      //   }
-      // )}
-    >
+    <div className="grid place-items-center lg:flex-1">
       <FormWrapper>
         <div className="lg:space-y-2">
           {/* Header */}

@@ -65,12 +65,12 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
       ({ user }) => {
         const docRef = doc(firestore, 'users', user.uid)
         setDoc(docRef, {
-          email,
           name: {
             first,
             last,
             middle
-          }
+          },
+          email
         })
       }
     )
