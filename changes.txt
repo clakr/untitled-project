@@ -3,9 +3,9 @@
 # Created
 
 # Refactored
-- EmailPassword and FullName Forms to be RFC
+- createUser() @ AuthContext.tsx
 
 # Imported
 
 ## TODO
-- Form Steppers 2 and 3
+- Form Stepper 3

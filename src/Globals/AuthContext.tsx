@@ -12,13 +12,23 @@ import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
 
 import { auth, firestore, FirebaseError } from './Firebase'
 
-interface PropInterface {
-  children: JSX.Element
+interface CreateUserInterface {
+  email: string
+  password: string
+  first: string
+  last: string
+  middle: string
 }
 
 interface ContextInferface {
   authedUser: User | null | undefined
-  createUser: (email: string, password: string) => Promise<void>
+  createUser: ({
+    email,
+    password,
+    first,
+    last,
+    middle
+  }: CreateUserInterface) => Promise<void>
   loginUser: (email: string, password: string) => Promise<UserCredential>
   logoutUser: () => Promise<void>
   showError: (error: FirebaseError) => void
@@ -31,7 +41,7 @@ export const useAuth = () => {
   return useContext(AuthContext)
 }
 
-const AuthProvider: React.FC<PropInterface> = ({ children }) => {
+const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [authedUser, setAuthedUser] = useState<User | null>()
   const [loading, setLoading] = useState<boolean>(true)
 
@@ -44,12 +54,23 @@ const AuthProvider: React.FC<PropInterface> = ({ children }) => {
     return unsubscribe
   }, [])
 
-  const createUser = (email: string, password: string) => {
+  const createUser = ({
+    email,
+    password,
+    first,
+    last,
+    middle
+  }: CreateUserInterface) => {
     const promise = createUserWithEmailAndPassword(auth, email, password).then(
       ({ user }) => {
         const docRef = doc(firestore, 'users', user.uid)
         setDoc(docRef, {
-          email: user.email
+          email,
+          name: {
+            first,
+            last,
+            middle
+          }
         })
       }
     )
