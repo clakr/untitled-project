@@ -5,11 +5,9 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   User,
-  UserCredential,
   signOut,
   updateProfile,
-  sendEmailVerification,
-  reload
+  sendEmailVerification
 } from 'firebase/auth'
 import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
 
@@ -46,8 +44,8 @@ interface ContextInferface {
     middle
   }: UpdateUserInterface) => Promise<void>
   sendEmailVerificationToUser: (user: User) => Promise<void>
-  checkUserIfVerified: () => void
-  loginUser: (email: string, password: string) => Promise<UserCredential>
+  checkUserIfVerified: () => Promise<boolean | undefined>
+  loginUser: (email: string, password: string) => Promise<void>
   logoutUser: () => Promise<void>
   getUser: () => Promise<DocumentData | undefined>
   showError: (error: unknown) => void
@@ -108,22 +106,20 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     return sendEmailVerification(user)
   }
 
-  const checkUserIfVerified = () => {
-    reload(authedUser as User)
+  const checkUserIfVerified = async () => {
+    await authedUser?.reload()
 
-    if (!authedUser?.emailVerified) {
-      throw new Error('User email not verified')
-    }
+    return authedUser?.emailVerified
   }
 
   const loginUser = (email: string, password: string) => {
-    const promise = signInWithEmailAndPassword(auth, email, password)
-
-    toast.promise(promise, {
-      loading: 'Loading...',
-      success: 'Login Success',
-      error: (error) => error.code
-    })
+    const promise = signInWithEmailAndPassword(auth, email, password).then(
+      ({ user }) => {
+        if (!user.emailVerified) {
+          throw new Error('User email not verified')
+        }
+      }
+    )
 
     return promise
   }

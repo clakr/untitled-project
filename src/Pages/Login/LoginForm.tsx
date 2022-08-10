@@ -6,6 +6,7 @@ import { useForm } from '@mantine/form'
 import { useAuth } from '../../Globals/AuthContext'
 import { LinkCustom } from '../../Globals/Components'
 import FormWrapper from '../../Globals/Components/FormWrapper'
+import toast from 'react-hot-toast'
 
 type EmailPasswordFormType = {
   email: string
@@ -48,8 +49,12 @@ const LoginForm: React.FC = () => {
 
           try {
             await loginUser(email, password)
+            toast.success('Login Success')
             navigate('/dashboard')
-          } catch (error) {}
+          } catch (error) {
+            toast.error(`${error}`)
+            navigate('/register')
+          }
 
           setLoading(false)
         })}

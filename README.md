@@ -1,7 +1,8 @@
 # untitled-project
 idk what to name this project, but its core concept will be schedule management (clocking in and out), and report generation.
 
-- [ ] Authentication
+- [X] Authentication
+- [ ] Clocking In and Out
 
 ## Ideas, Recommendation, and/or future features
 1. Task Management

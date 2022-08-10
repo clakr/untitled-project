@@ -300,7 +300,7 @@ const RegisterForm: React.FC = () => {
             progressIcon={
               <StepperIcon icon={faUserPlus} className="text-blue-500" />
             }
-            allowStepSelect={stepperActive > 0}
+            allowStepSelect={false}
           >
             <EmailPasswordForm
               form={mantineEmailPasswordForm}
@@ -315,7 +315,7 @@ const RegisterForm: React.FC = () => {
             progressIcon={
               <StepperIcon icon={faIdCard} className="text-blue-500" />
             }
-            allowStepSelect={stepperActive > 1}
+            allowStepSelect={false}
           >
             <NameForm
               form={mantineNameForm}
@@ -331,16 +331,23 @@ const RegisterForm: React.FC = () => {
             progressIcon={
               <StepperIcon icon={faEnvelopeOpen} className="text-blue-500" />
             }
-            allowStepSelect={stepperActive > 2}
+            allowStepSelect={false}
           >
             <div className="flex flex-col gap-y-4 p-4">
               Almost there! Please check your email for account verification
               kemerut
               <Button
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    checkUserIfVerified()
-                    navigate('/dashboard')
+                    const emailVerified = await checkUserIfVerified()
+
+                    if (emailVerified) {
+                      toast.success('Register Success')
+                      navigate('/dashboard')
+                      return
+                    }
+
+                    throw new Error('User not verified')
                   } catch (error) {
                     toast.error(`${error}`)
                   }
