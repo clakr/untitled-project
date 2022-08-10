@@ -163,8 +163,13 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
   error: [error, setError],
   setStepperActive
 }) => {
-  const navigate = useNavigate()
-  const { createUser, updateUserDisplayName, userSetDoc, showError } = useAuth()
+  const {
+    createUser,
+    updateUserDisplayName,
+    userSetDoc,
+    sendEmailVerificationToUser,
+    showError
+  } = useAuth()
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
@@ -181,8 +186,8 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
             const user = await createUser({ ...secForm.values })
             updateUserDisplayName({ user, ...values })
             userSetDoc({ user, ...values })
-            toast.success('Register Success')
-            navigate('/dashboard')
+            sendEmailVerificationToUser(user)
+            setStepperActive((current) => (current < 3 ? current + 1 : current))
           } catch (error) {
             showError(error)
           }
@@ -227,6 +232,8 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
 }
 
 const RegisterForm: React.FC = () => {
+  const navigate = useNavigate()
+  const { authedUser, checkUserIfVerified } = useAuth()
   const [error, setError] = useState<boolean>(true)
   const [stepperActive, setStepperActive] = useState<number>(0)
 
@@ -250,6 +257,12 @@ const RegisterForm: React.FC = () => {
 
     validateInputOnChange: true
   })
+
+  useEffect(() => {
+    if (authedUser && !authedUser?.emailVerified) {
+      setStepperActive(2)
+    }
+  }, [authedUser])
 
   return (
     <div className="grid place-items-center lg:flex-1">
@@ -320,6 +333,22 @@ const RegisterForm: React.FC = () => {
             }
             allowStepSelect={stepperActive > 2}
           >
+            <div className="flex flex-col gap-y-4 p-4">
+              Almost there! Please check your email for account verification
+              kemerut
+              <Button
+                onClick={() => {
+                  try {
+                    checkUserIfVerified()
+                    navigate('/dashboard')
+                  } catch (error) {
+                    toast.error(`${error}`)
+                  }
+                }}
+              >
+                I&apos;m verified!
+              </Button>
+            </div>
             {/* <StepperNavigation
               error={[error, setError]}
               setStepperActive={setStepperActive}
@@ -335,16 +364,6 @@ const RegisterForm: React.FC = () => {
             /> */}
           </Stepper.Completed>
         </Stepper>
-
-        {/* Submit Button */}
-        {/* <Button
-          type="submit"
-          bgColor="bg-blue-400"
-          hoverColor="hover:bg-blue-600"
-          focusColor="focus:outline-blue-600"
-          value="Register"
-          isLoading={isLoading}
-        /> */}
 
         {/* Create an account */}
         <h3 className=" text-center">

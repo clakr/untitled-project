@@ -10,7 +10,7 @@ const InitialRoute: React.FC = () => {
   const [isLogged, setIsLogged] = useState<boolean>(false)
 
   useEffect(() => {
-    if (authedUser) {
+    if (authedUser && authedUser.emailVerified) {
       setIsLogged(true)
     }
 

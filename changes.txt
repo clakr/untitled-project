@@ -1,17 +1,19 @@
 > COMMIT
 
 # Created
+- updateUserDisplayName(), userSetDoc(), sendEmailVerificationToUser(), checkUserIfVerified() @ authContext.tsx
 
 # Refactored
+- UserRoute.tsx
+- InitialRoute.tsx
 - RegisterForm.tsx
 
 # Imported
 
 ## TODO
-- Form Stepper 3
+- Handling emailVerified state of User @ logging-in
 
 ## NOTES
 - Email Availability Checker @ Form Stepper 1
 - Email Verification
-  - Form Stepper 3
   - Logged-in Page

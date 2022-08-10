@@ -7,7 +7,9 @@ import {
   User,
   UserCredential,
   signOut,
-  updateProfile
+  updateProfile,
+  sendEmailVerification,
+  reload
 } from 'firebase/auth'
 import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
 
@@ -43,6 +45,8 @@ interface ContextInferface {
     last,
     middle
   }: UpdateUserInterface) => Promise<void>
+  sendEmailVerificationToUser: (user: User) => Promise<void>
+  checkUserIfVerified: () => void
   loginUser: (email: string, password: string) => Promise<UserCredential>
   logoutUser: () => Promise<void>
   getUser: () => Promise<DocumentData | undefined>
@@ -68,14 +72,12 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     return unsubscribe
   }, [])
 
-  const createUser = ({ email, password }: EmailPasswordInterface) => {
-    const promise = createUserWithEmailAndPassword(auth, email, password).then(
+  const createUser = async ({ email, password }: EmailPasswordInterface) => {
+    return await createUserWithEmailAndPassword(auth, email, password).then(
       ({ user }) => {
         return user
       }
     )
-
-    return promise
   }
 
   const updateUserDisplayName = ({
@@ -84,17 +86,15 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     last,
     middle
   }: UpdateUserInterface) => {
-    const promise = updateProfile(user, {
+    return updateProfile(user, {
       displayName: `${first} ${middle}. ${last}`
     })
-
-    return promise
   }
 
   const userSetDoc = ({ user, first, last, middle }: UpdateUserInterface) => {
     const docRef = doc(firestore, 'users', user.uid)
 
-    const promise = setDoc(docRef, {
+    return setDoc(docRef, {
       name: {
         first,
         last,
@@ -102,8 +102,18 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
       },
       email: user.email
     })
+  }
 
-    return promise
+  const sendEmailVerificationToUser = (user: User) => {
+    return sendEmailVerification(user)
+  }
+
+  const checkUserIfVerified = () => {
+    reload(authedUser as User)
+
+    if (!authedUser?.emailVerified) {
+      throw new Error('User email not verified')
+    }
   }
 
   const loginUser = (email: string, password: string) => {
@@ -149,6 +159,8 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     createUser,
     updateUserDisplayName,
     userSetDoc,
+    sendEmailVerificationToUser,
+    checkUserIfVerified,
     loginUser,
     logoutUser,
     getUser,
