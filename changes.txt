@@ -3,8 +3,7 @@
 # Created
 
 # Refactored
-- Forms @ LoginForm.tsx
-- Globals/Components
+- RegisterForm.tsx
 
 # Imported
 

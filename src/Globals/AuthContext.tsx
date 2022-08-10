@@ -6,33 +6,47 @@ import {
   onAuthStateChanged,
   User,
   UserCredential,
-  signOut
+  signOut,
+  updateProfile
 } from 'firebase/auth'
 import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
 
 import { auth, firestore, FirebaseError } from './Firebase'
 
-interface CreateUserInterface {
+interface EmailPasswordInterface {
   email: string
   password: string
+}
+
+interface FullNameInterface {
   first: string
   last: string
   middle: string
 }
 
+interface UpdateUserInterface extends FullNameInterface {
+  user: User
+}
+
 interface ContextInferface {
-  authedUser: User | null | undefined
-  createUser: ({
-    email,
-    password,
+  authedUser: User | null
+  createUser: ({ email, password }: EmailPasswordInterface) => Promise<User>
+  updateUserDisplayName: ({
+    user,
     first,
     last,
     middle
-  }: CreateUserInterface) => Promise<void>
+  }: UpdateUserInterface) => Promise<void>
+  userSetDoc: ({
+    user,
+    first,
+    last,
+    middle
+  }: UpdateUserInterface) => Promise<void>
   loginUser: (email: string, password: string) => Promise<UserCredential>
   logoutUser: () => Promise<void>
-  showError: (error: FirebaseError) => void
   getUser: () => Promise<DocumentData | undefined>
+  showError: (error: unknown) => void
 }
 
 const AuthContext = createContext<ContextInferface>({} as ContextInferface)
@@ -42,7 +56,7 @@ export const useAuth = () => {
 }
 
 const AuthProvider = ({ children }: { children: JSX.Element }) => {
-  const [authedUser, setAuthedUser] = useState<User | null>()
+  const [authedUser, setAuthedUser] = useState<User | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
@@ -54,31 +68,39 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     return unsubscribe
   }, [])
 
-  const createUser = ({
-    email,
-    password,
-    first,
-    last,
-    middle
-  }: CreateUserInterface) => {
+  const createUser = ({ email, password }: EmailPasswordInterface) => {
     const promise = createUserWithEmailAndPassword(auth, email, password).then(
       ({ user }) => {
-        const docRef = doc(firestore, 'users', user.uid)
-        setDoc(docRef, {
-          name: {
-            first,
-            last,
-            middle
-          },
-          email
-        })
+        return user
       }
     )
 
-    toast.promise(promise, {
-      loading: 'Loading...',
-      success: 'Register Success',
-      error: (error) => error.code
+    return promise
+  }
+
+  const updateUserDisplayName = ({
+    user,
+    first,
+    last,
+    middle
+  }: UpdateUserInterface) => {
+    const promise = updateProfile(user, {
+      displayName: `${first} ${middle}. ${last}`
+    })
+
+    return promise
+  }
+
+  const userSetDoc = ({ user, first, last, middle }: UpdateUserInterface) => {
+    const docRef = doc(firestore, 'users', user.uid)
+
+    const promise = setDoc(docRef, {
+      name: {
+        first,
+        last,
+        middle
+      },
+      email: user.email
     })
 
     return promise
@@ -100,12 +122,6 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     return signOut(auth)
   }
 
-  const showError = (error: FirebaseError) => {
-    toast.error(error.code, {
-      duration: 2000
-    })
-  }
-
   const getUser = async () => {
     const docRef = doc(firestore, 'users', (authedUser as User).uid)
     const docData = await getDoc(docRef).then(
@@ -119,13 +135,24 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     return docData
   }
 
+  const showError = (error: unknown) => {
+    if (error instanceof FirebaseError) {
+      toast.error(`${error.code}`)
+      return
+    }
+
+    toast.error(`${error}`)
+  }
+
   const value = {
     authedUser,
     createUser,
+    updateUserDisplayName,
+    userSetDoc,
     loginUser,
     logoutUser,
-    showError,
-    getUser
+    getUser,
+    showError
   }
 
   return (

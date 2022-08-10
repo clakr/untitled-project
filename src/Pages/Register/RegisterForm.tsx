@@ -12,6 +12,8 @@ import {
 import { useAuth } from '../../Globals/AuthContext'
 import { LinkCustom, FormWrapper } from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
+import { randomId } from '@mantine/hooks'
+import toast from 'react-hot-toast'
 
 type EmailPasswordFormType = {
   email: string
@@ -144,6 +146,12 @@ const EmailPasswordForm: React.FC<FormInterface<EmailPasswordFormType>> = ({
           {...form.getInputProps('confirmPassword')}
         />
       </div>
+      <Button
+        variant="outline"
+        onClick={() => form.setFieldValue('email', `${randomId()}@test.com`)}
+      >
+        Random email
+      </Button>
       <StepperNavigation error={error} setStepperActive={setStepperActive} />
     </form>
   )
@@ -156,7 +164,7 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
   setStepperActive
 }) => {
   const navigate = useNavigate()
-  const { createUser } = useAuth()
+  const { createUser, updateUserDisplayName, userSetDoc, showError } = useAuth()
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
@@ -170,9 +178,14 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
         setLoading(true)
         if (secForm) {
           try {
-            await createUser({ ...secForm.values, ...values })
+            const user = await createUser({ ...secForm.values })
+            updateUserDisplayName({ user, ...values })
+            userSetDoc({ user, ...values })
+            toast.success('Register Success')
             navigate('/dashboard')
-          } catch (error) {}
+          } catch (error) {
+            showError(error)
+          }
         }
 
         setLoading(false)
