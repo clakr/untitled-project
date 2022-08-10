@@ -228,8 +228,7 @@ const RegisterForm: React.FC = () => {
         value === values.password ? null : 'Passwords did not match'
     },
 
-    validateInputOnChange: true,
-    clearInputErrorOnChange: false
+    validateInputOnChange: true
   })
 
   const mantineNameForm = useForm({

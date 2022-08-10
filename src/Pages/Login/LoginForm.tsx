@@ -1,56 +1,58 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { PasswordInput, TextInput, Button, Checkbox } from '@mantine/core'
+import { useForm } from '@mantine/form'
 
 import { useAuth } from '../../Globals/AuthContext'
-import { FormInput, Button, LinkCustom } from '../../Globals/Components'
+import { LinkCustom } from '../../Globals/Components'
 import FormWrapper from '../../Globals/Components/FormWrapper'
 
-type FormValuesType = {
+type EmailPasswordFormType = {
   email: string
   password: string
 }
 
-const initialState: FormValuesType = {
+const emailPasswordInitialValues: EmailPasswordFormType = {
   email: '',
   password: ''
+}
+
+const emailPasswordInitialErrors: EmailPasswordFormType = {
+  ...emailPasswordInitialValues
 }
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate()
   const { loginUser } = useAuth()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [form, setForm] = useState<FormValuesType>(initialState)
-  const { email, password } = form
+  const [loading, setLoading] = useState<boolean>(false)
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const {
-      currentTarget: { name, value }
-    } = event
+  const form = useForm<EmailPasswordFormType>({
+    initialValues: emailPasswordInitialValues,
+    initialErrors: emailPasswordInitialErrors,
 
-    setForm({
-      ...form,
-      [name]: value
-    })
-  }
+    validate: {
+      email: (value) =>
+        /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value) ? null : 'Invalid email'
+    },
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setIsLoading(true)
-
-    try {
-      await loginUser(email, password)
-      navigate('/dashboard')
-      setForm(initialState)
-    } catch (error) {}
-
-    setIsLoading(false)
-  }
+    validateInputOnChange: true
+  })
 
   return (
     <>
       <form
         className="grid place-items-center lg:flex-1"
-        onSubmit={(event) => handleSubmit(event)}
+        onSubmit={form.onSubmit(async (values) => {
+          setLoading(true)
+          const { email, password } = values
+
+          try {
+            await loginUser(email, password)
+            navigate('/dashboard')
+          } catch (error) {}
+
+          setLoading(false)
+        })}
       >
         <FormWrapper>
           <div className="lg:space-y-2">
@@ -67,37 +69,31 @@ const LoginForm: React.FC = () => {
 
           {/* Inputs */}
           <div className="space-y-4">
-            <FormInput
-              labelName="email"
-              inputName="email"
-              inputType="email"
+            <TextInput
+              label="Email"
               placeholder="juandelacruz@gmail.com"
-              onChange={handleChange}
-              value={email}
+              classNames={{ label: 'px-3' }}
+              autoComplete="on"
+              required
+              {...form.getInputProps('email')}
             />
-            <FormInput
-              labelName="password"
-              inputName="password"
-              inputType="password"
+            <PasswordInput
+              label="Password"
               placeholder="********"
-              onChange={handleChange}
-              value={password}
+              classNames={{
+                root: 'flex-1',
+                label: 'px-3',
+                description: 'px-3'
+              }}
+              autoComplete="on"
+              required
+              {...form.getInputProps('password')}
             />
           </div>
 
           {/* Remember Me and Forgot Password */}
           <div className="flex justify-between gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="rememberme"
-                id="rememberme"
-                className="bg-transparent focus:outline-blue-600"
-              />
-              <label htmlFor="rememberme" className="select-none">
-                Remember Me
-              </label>
-            </div>
+            <Checkbox label="Remember Me" />
             <LinkCustom
               to="forgot"
               hover="hover:bg-blue-600 hover:text-gray-50"
@@ -108,14 +104,9 @@ const LoginForm: React.FC = () => {
           </div>
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            bgColor="bg-blue-400"
-            hoverColor="hover:bg-blue-600"
-            focusColor="focus:outline-blue-600"
-            value="Log in"
-            isLoading={isLoading}
-          />
+          <Button type="submit" loading={loading}>
+            Log In
+          </Button>
 
           {/* Create an account */}
           <h3 className=" text-center">

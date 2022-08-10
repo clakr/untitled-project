@@ -1,11 +1,18 @@
 > COMMIT
 
 # Created
-- Loading State while waiting for promise @ RegisterForm.tsx
 
 # Refactored
+- Forms @ LoginForm.tsx
+- Globals/Components
 
 # Imported
 
 ## TODO
 - Form Stepper 3
+
+## NOTES
+- Email Availability Checker @ Form Stepper 1
+- Email Verification
+  - Form Stepper 3
+  - Logged-in Page
