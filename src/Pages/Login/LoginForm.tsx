@@ -99,13 +99,7 @@ const LoginForm: React.FC = () => {
           {/* Remember Me and Forgot Password */}
           <div className="flex justify-between gap-4 text-sm">
             <Checkbox label="Remember Me" />
-            <LinkCustom
-              to="forgot"
-              hover="hover:bg-blue-600 hover:text-gray-50"
-              focus="focus:outline-blue-600"
-              padding="px-2 py-1"
-              value="Forgot Password?"
-            />
+            <LinkCustom to="forgot" value="Forgot Password?" />
           </div>
 
           {/* Submit Button */}
@@ -116,13 +110,7 @@ const LoginForm: React.FC = () => {
           {/* Create an account */}
           <h3 className=" text-center">
             Don&apos;t have an account? <br />
-            <LinkCustom
-              to="register"
-              hover="hover:bg-blue-600 hover:text-gray-50"
-              focus="focus:outline-offset-[-2px] focus:outline-blue-600"
-              padding="px-2 py-1"
-              value="Create an account."
-            />
+            <LinkCustom to="register" value="Create an account." />
           </h3>
         </FormWrapper>
       </form>

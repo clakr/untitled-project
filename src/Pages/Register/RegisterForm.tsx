@@ -1,5 +1,6 @@
 import React, { SetStateAction, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { Stepper, TextInput, PasswordInput, Button } from '@mantine/core'
 import { useForm, UseFormReturnType } from '@mantine/form'
 import {
@@ -12,8 +13,6 @@ import {
 import { useAuth } from '../../Globals/AuthContext'
 import { LinkCustom, FormWrapper } from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
-import { randomId } from '@mantine/hooks'
-import toast from 'react-hot-toast'
 
 type EmailPasswordFormType = {
   email: string
@@ -146,12 +145,6 @@ const EmailPasswordForm: React.FC<FormInterface<EmailPasswordFormType>> = ({
           {...form.getInputProps('confirmPassword')}
         />
       </div>
-      <Button
-        variant="outline"
-        onClick={() => form.setFieldValue('email', `${randomId()}@test.com`)}
-      >
-        Random email
-      </Button>
       <StepperNavigation error={error} setStepperActive={setStepperActive} />
     </form>
   )
@@ -298,7 +291,7 @@ const RegisterForm: React.FC = () => {
           <Stepper.Step
             icon={<StepperIcon icon={faUserPlus} />}
             progressIcon={
-              <StepperIcon icon={faUserPlus} className="text-blue-500" />
+              <StepperIcon icon={faUserPlus} className="text-blue-mantine6" />
             }
             allowStepSelect={false}
           >
@@ -313,7 +306,7 @@ const RegisterForm: React.FC = () => {
           <Stepper.Step
             icon={<StepperIcon icon={faIdCard} />}
             progressIcon={
-              <StepperIcon icon={faIdCard} className="text-blue-500" />
+              <StepperIcon icon={faIdCard} className="text-blue-mantine6" />
             }
             allowStepSelect={false}
           >
@@ -329,7 +322,10 @@ const RegisterForm: React.FC = () => {
           <Stepper.Step
             icon={<StepperIcon icon={faEnvelopeOpen} />}
             progressIcon={
-              <StepperIcon icon={faEnvelopeOpen} className="text-blue-500" />
+              <StepperIcon
+                icon={faEnvelopeOpen}
+                className="text-blue-mantine6"
+              />
             }
             allowStepSelect={false}
           >
@@ -375,13 +371,7 @@ const RegisterForm: React.FC = () => {
         {/* Create an account */}
         <h3 className=" text-center">
           Already have an account? <br />
-          <LinkCustom
-            to="/"
-            hover="hover:bg-blue-600 hover:text-gray-50"
-            focus="focus:outline-offset-[-2px] focus:outline-blue-600"
-            padding="px-2 py-1"
-            value="Sign in an account."
-          />
+          <LinkCustom to="/" value="Sign in an account." />
         </h3>
       </FormWrapper>
     </div>

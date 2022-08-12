@@ -3,8 +3,7 @@
 # Created
 
 # Refactored
-- AuthContext.tsx
-- LoginForm.tsx
+- Mantine Color Scheme with Tailwind's
 
 # Imported
 
