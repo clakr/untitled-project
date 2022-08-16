@@ -1,14 +1,16 @@
 > COMMIT
 
 # Created
+- 404 Pages for non-existent pages
 
 # Refactored
-- Dashboard to include Mantine's AppShell, Header, and Navbar
 
 # Imported
 
 ## TODO
+- SideNav.tsx
 - Clocking In and Out
+- Wrong Password Error redirects to Register Form
 
 ## NOTES
 - Email Availability Checker @ Form Stepper 1

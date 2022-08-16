@@ -80,7 +80,7 @@ const UserRoute: React.FC = () => {
       >
         {isLoading
           ? (
-          <div className="flex h-screen items-center justify-center">
+          <div className="grid h-full w-full place-items-center">
             <img src={LoadingPageIcon} alt="" className="w-80" />
           </div>
             )
