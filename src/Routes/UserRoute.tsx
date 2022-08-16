@@ -72,8 +72,7 @@ const UserRoute: React.FC = () => {
                   size="sm"
                 />
               </MediaQuery>
-
-              <Text>this is app name</Text>
+              <Text>untitled-project</Text>
             </div>
           </Header>
         }

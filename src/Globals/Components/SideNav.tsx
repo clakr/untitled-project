@@ -1,16 +1,16 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Divider, Navbar, NavLink } from '@mantine/core'
+import { Button, Divider, Navbar } from '@mantine/core'
 import {
   faSignOutAlt,
   faChartLine,
-  faHistory
+  faHistory,
+  faUserAlt
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useAuth } from '../AuthContext'
-import ButtonLink from './ButtonLink'
-import ButtonOnClick from './ButtonOnClick'
+import SideNavLink from './SideNavLink'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const SideNav = ({ isOpened }: { isOpened: boolean }) => {
@@ -24,18 +24,32 @@ const SideNav = ({ isOpened }: { isOpened: boolean }) => {
   }
 
   return (
-    <Navbar p="md" hiddenBreakpoint="sm" hidden={!isOpened} width={{ sm: 300 }}>
+    <Navbar
+      p="md"
+      hiddenBreakpoint="sm"
+      hidden={!isOpened}
+      width={{ sm: 250, md: 300 }}
+    >
       <div className="flex flex-col gap-y-2">
-        <ButtonLink value="Dashboard" to="/u/dashboard" icon={faChartLine} />
-        <ButtonLink value="History" to="/u/history" icon={faHistory} />
+        <SideNavLink label="Dashboard" to="/u/dashboard" icon={faChartLine} />
+        <SideNavLink label="History" to="/u/history" icon={faHistory} />
         <Divider />
-        <ButtonLink value="Profile" to="/u/history" icon={faHistory} />
+        <SideNavLink label="Profile" to="/u/profile" icon={faUserAlt} />
         <Divider />
-        <ButtonOnClick
+        <Button
+          color="red"
+          variant="subtle"
+          leftIcon={<FontAwesomeIcon icon={faSignOutAlt} />}
+          classNames={{ inner: 'gap-x-2', label: 'flex-1' }}
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+        {/* <ButtonOnClick
           value="Logout"
           icon={faSignOutAlt}
           onClick={handleLogout}
-        />
+        /> */}
       </div>
     </Navbar>
   )

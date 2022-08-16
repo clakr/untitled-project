@@ -1,14 +1,14 @@
 > COMMIT
 
 # Created
-- 404 Pages for non-existent pages
+- Custom NavLink Global Components
 
 # Refactored
+- Dashboard/index.tsx
 
 # Imported
 
 ## TODO
-- SideNav.tsx
 - Clocking In and Out
 - Wrong Password Error redirects to Register Form
 

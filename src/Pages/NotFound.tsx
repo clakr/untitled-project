@@ -10,9 +10,10 @@ const NotFound = () => {
   return (
     <div className="grid h-full w-full place-items-center">
       <div className="flex flex-col gap-y-4">
-        <FontAwesomeIcon size="10x" icon={faSkull} />
-        <h1 className="text-4xl">
-          <span className="text-5xl font-black">404:</span> Site Not Found
+        <FontAwesomeIcon size="7x" icon={faSkull} />
+        <h1 className="text-2xl">
+          <span className="text-center text-3xl font-black">404:</span> Site Not
+          Found
         </h1>
         <Button color="" variant="subtle" onClick={() => navigate(-1)}>
           Go Back
