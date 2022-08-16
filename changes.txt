@@ -1,10 +1,11 @@
 > COMMIT
 
 # Created
-- Custom NavLink Global Components
+- FirestoreContext.ts
 
 # Refactored
-- Dashboard/index.tsx
+- AuthContext.tsx
+- UserRoutes.tsx
 
 # Imported
 

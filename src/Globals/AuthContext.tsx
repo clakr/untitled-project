@@ -47,7 +47,7 @@ interface ContextInferface {
   checkUserIfVerified: () => Promise<boolean | undefined>
   loginUser: (email: string, password: string) => Promise<void>
   logoutUser: () => Promise<void>
-  getUser: () => Promise<DocumentData | undefined>
+  getUser: (uid: string) => Promise<DocumentData | undefined>
   showError: (error: unknown) => void
 }
 
@@ -128,17 +128,11 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     return signOut(auth)
   }
 
-  const getUser = async () => {
-    const docRef = doc(firestore, 'users', (authedUser as User).uid)
-    const docData = await getDoc(docRef).then(
-      (data) => {
-        return data.data()
-      },
-      () => {
-        throw new Error('User ID does not exist')
-      }
-    )
-    return docData
+  const getUser = async (uid: string) => {
+    const docRef = doc(firestore, 'users', uid)
+    const docData = await getDoc(docRef)
+
+    return docData.data()
   }
 
   const showError = (error: unknown) => {
@@ -150,7 +144,7 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     toast.error(`${error}`)
   }
 
-  const value = {
+  const value: ContextInferface = {
     authedUser,
     createUser,
     updateUserDisplayName,

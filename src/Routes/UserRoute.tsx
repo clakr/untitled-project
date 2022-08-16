@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate, useOutletContext } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { DocumentData } from 'firebase/firestore'
+import { AppShell, Burger, Header, MediaQuery, Text } from '@mantine/core'
 
 import { useAuth } from '../Globals/AuthContext'
-
+import FirestoreProvider from '../Globals/FirestoreContext'
 import LoadingPageIcon from '../Globals/Assets/LoadingPage.svg'
-import { AppShell, Burger, Header, MediaQuery, Text } from '@mantine/core'
 import SideNav from '../Globals/Components/SideNav'
 
 interface UserContextInterface {
@@ -25,11 +25,14 @@ const UserRoute: React.FC = () => {
   useEffect(() => {
     setIsLoading(true)
     const getUserData = async () => {
-      const data = await getUser()
-      setUser((prevState) => ({
-        ...prevState,
-        ...data
-      }))
+      if (authedUser) {
+        const data = await getUser(authedUser?.uid)
+        setUser((prevState) => ({
+          ...prevState,
+          ...data
+        }))
+      }
+
       setIsLoading(false)
     }
 
@@ -57,7 +60,7 @@ const UserRoute: React.FC = () => {
   }, [isLogged, isVerified])
 
   return (
-    <>
+    <FirestoreProvider>
       <AppShell
         navbarOffsetBreakpoint="sm"
         asideOffsetBreakpoint="sm"
@@ -87,7 +90,7 @@ const UserRoute: React.FC = () => {
           <Outlet context={{ user }} />
             )}
       </AppShell>
-    </>
+    </FirestoreProvider>
   )
 }
 
