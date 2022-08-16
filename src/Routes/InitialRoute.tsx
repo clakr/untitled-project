@@ -15,8 +15,8 @@ const InitialRoute: React.FC = () => {
     }
 
     if (isLogged) {
-      toast.error('User already Authenticated; Redirecting to /dashboard')
-      navigate('/dashboard')
+      toast.error('User already Authenticated; Redirecting to /u/dashboard')
+      navigate('/u/dashboard')
     }
   }, [isLogged])
 

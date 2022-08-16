@@ -6,6 +6,8 @@ import { DocumentData } from 'firebase/firestore'
 import { useAuth } from '../Globals/AuthContext'
 
 import LoadingPageIcon from '../Globals/Assets/LoadingPage.svg'
+import { AppShell, Burger, Header, MediaQuery, Text } from '@mantine/core'
+import SideNav from '../Globals/Components/SideNav'
 
 interface UserContextInterface {
   user: DocumentData | undefined
@@ -18,6 +20,7 @@ const UserRoute: React.FC = () => {
   const [isVerified, setIsVerified] = useState<boolean>(true)
   const [isLogged, setIsLogged] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isOpened, setIsOpened] = useState<boolean>(false)
 
   useEffect(() => {
     setIsLoading(true)
@@ -55,14 +58,36 @@ const UserRoute: React.FC = () => {
 
   return (
     <>
-      <div
-        className={`${
-          isLoading ? 'flex h-screen items-center justify-center' : 'hidden'
-        }`}
+      <AppShell
+        navbarOffsetBreakpoint="sm"
+        asideOffsetBreakpoint="sm"
+        navbar={<SideNav isOpened={isOpened} />}
+        header={
+          <Header height={75} p="md">
+            <div className="flex h-full items-center gap-x-4">
+              <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+                <Burger
+                  opened={isOpened}
+                  onClick={() => setIsOpened((prevState) => !prevState)}
+                  size="sm"
+                />
+              </MediaQuery>
+
+              <Text>this is app name</Text>
+            </div>
+          </Header>
+        }
       >
-        <img src={LoadingPageIcon} alt="" className="w-80" />
-      </div>
-      <Outlet context={{ user }} />
+        {isLoading
+          ? (
+          <div className="flex h-screen items-center justify-center">
+            <img src={LoadingPageIcon} alt="" className="w-80" />
+          </div>
+            )
+          : (
+          <Outlet context={{ user }} />
+            )}
+      </AppShell>
     </>
   )
 }

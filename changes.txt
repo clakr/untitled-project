@@ -3,7 +3,7 @@
 # Created
 
 # Refactored
-- Mantine Color Scheme with Tailwind's
+- Dashboard to include Mantine's AppShell, Header, and Navbar
 
 # Imported
 

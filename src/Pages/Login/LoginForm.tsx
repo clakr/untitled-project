@@ -50,7 +50,7 @@ const LoginForm: React.FC = () => {
           try {
             await loginUser(email, password)
             toast.success('Login Success')
-            navigate('/dashboard')
+            navigate('/u/dashboard')
           } catch (error) {
             toast.error(`${error}`)
             navigate('/register')

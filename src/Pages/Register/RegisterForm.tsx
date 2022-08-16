@@ -339,7 +339,7 @@ const RegisterForm: React.FC = () => {
 
                     if (emailVerified) {
                       toast.success('Register Success')
-                      navigate('/dashboard')
+                      navigate('/u/dashboard')
                       return
                     }
 
