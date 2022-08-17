@@ -1,10 +1,14 @@
-import moment from 'moment'
 import React, { createContext, useContext } from 'react'
+import moment from 'moment'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import toast from 'react-hot-toast'
+
 import { useAuth } from './AuthContext'
 import { firestore } from './Firebase'
-import { doc, setDoc, updateDoc } from 'firebase/firestore'
+import { User } from 'firebase/auth'
 
 interface ContextInferface {
+  checkDateIfExists: () => Promise<'in' | 'out'>
   clockIn: () => Promise<void> | undefined
   clockOut: () => Promise<void> | undefined
 }
@@ -17,20 +21,37 @@ export const useFirestore = () => {
 
 const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
   const { authedUser } = useAuth()
+  const docRef = doc(firestore, 'record', (authedUser as User).uid)
+  const dateToday = moment().format('YYYY-MM-DD')
 
-  const clockIn = () => {
+  const checkDateIfExists = async () => {
+    const docSnap = getDoc(docRef)
+    const data = (await docSnap).data()
+
+    if (data) {
+      if (dateToday in data && data[dateToday].out == null) {
+        return 'out'
+      }
+    }
+
+    return 'in'
+  }
+
+  const clockIn = async () => {
     if (authedUser) {
-      const docRef = doc(firestore, 'record', authedUser?.uid)
-
-      const dateToday = moment().format('YYYY-MM-DD')
       const now = moment().unix()
 
-      return setDoc(docRef, {
-        [dateToday]: {
-          in: now,
-          out: ''
-        }
-      })
+      try {
+        setDoc(docRef, {})
+        updateDoc(docRef, {
+          [dateToday]: {
+            in: now,
+            out: null
+          }
+        })
+      } catch (error) {
+        toast.error(`${error}`)
+      }
     }
   }
 
@@ -38,7 +59,6 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     if (authedUser) {
       const docRef = doc(firestore, 'record', authedUser?.uid)
 
-      const dateToday = moment().format('YYYY-MM-DD')
       const now = moment().unix()
 
       return updateDoc(docRef, {
@@ -48,6 +68,7 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
   }
 
   const value: ContextInferface = {
+    checkDateIfExists,
     clockIn,
     clockOut
   }

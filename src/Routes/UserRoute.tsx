@@ -1,16 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { SetStateAction, useEffect, useState } from 'react'
 import { Outlet, useNavigate, useOutletContext } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { DocumentData } from 'firebase/firestore'
-import { AppShell, Burger, Header, MediaQuery, Text } from '@mantine/core'
+import {
+  AppShell,
+  Burger,
+  Header,
+  Loader,
+  MediaQuery,
+  Text
+} from '@mantine/core'
 
 import { useAuth } from '../Globals/AuthContext'
 import FirestoreProvider from '../Globals/FirestoreContext'
-import LoadingPageIcon from '../Globals/Assets/LoadingPage.svg'
 import SideNav from '../Globals/Components/SideNav'
 
 interface UserContextInterface {
   user: DocumentData | undefined
+  isLoading: boolean
+  setIsLoading: React.Dispatch<SetStateAction<boolean>>
 }
 
 const UserRoute: React.FC = () => {
@@ -32,11 +40,14 @@ const UserRoute: React.FC = () => {
           ...data
         }))
       }
-
       setIsLoading(false)
     }
 
     getUserData()
+
+    return () => {
+      setIsLoading(true)
+    }
   }, [])
 
   useEffect(() => {
@@ -83,11 +94,11 @@ const UserRoute: React.FC = () => {
         {isLoading
           ? (
           <div className="grid h-full w-full place-items-center">
-            <img src={LoadingPageIcon} alt="" className="w-80" />
+            <Loader size="xl" />
           </div>
             )
           : (
-          <Outlet context={{ user }} />
+          <Outlet context={{ user, isLoading, setIsLoading }} />
             )}
       </AppShell>
     </FirestoreProvider>

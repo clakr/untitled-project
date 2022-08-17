@@ -35,6 +35,7 @@ const SideNav = ({ isOpened }: { isOpened: boolean }) => {
         <SideNavLink label="History" to="/u/history" icon={faHistory} />
         <Divider />
         <SideNavLink label="Profile" to="/u/profile" icon={faUserAlt} />
+        <SideNavLink label="404" to="/u/qwe" icon={faUserAlt} />
         <Divider />
         <Button
           color="red"
@@ -45,11 +46,6 @@ const SideNav = ({ isOpened }: { isOpened: boolean }) => {
         >
           Logout
         </Button>
-        {/* <ButtonOnClick
-          value="Logout"
-          icon={faSignOutAlt}
-          onClick={handleLogout}
-        /> */}
       </div>
     </Navbar>
   )

@@ -1,16 +1,15 @@
 > COMMIT
 
 # Created
-- FirestoreContext.ts
+- checkDateIfExists() @ FirestoreContext.tsx
 
 # Refactored
-- AuthContext.tsx
-- UserRoutes.tsx
+- dashboard/index.tsx
 
 # Imported
 
 ## TODO
-- Clocking In and Out
+- Calculating Rendered hours
 - Wrong Password Error redirects to Register Form
 
 ## NOTES
