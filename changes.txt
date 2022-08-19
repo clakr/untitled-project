@@ -1,15 +1,17 @@
 > COMMIT
 
 # Created
-- Table to display data @ history/index.tsx
 
 # Refactored
+- records/index.tsx
 
 # Imported
 
 ## TODO
-- Displaying data (BETTER)
+- Add Record to specific date
 - Wrong Password Error redirects to Register Form
 
 ## NOTES
+- Displaying data @ history/index.tsx (BETTER)
+- What about break time hours?
 - Email Availability Checker @ Form Stepper 1

@@ -18,7 +18,10 @@ const SideNavLink: React.FC<SideNavLinkInterface> = ({ label, to, icon }) => {
       to={to}
       icon={<FontAwesomeIcon icon={icon} />}
       active={location.pathname === to}
-      classNames={{ root: 'gap-x-2 rounded-[4px]' }}
+      classNames={{
+        root: 'gap-x-4 rounded-[4px]',
+        icon: 'w-[5%]'
+      }}
     />
   )
 }

@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast'
 import { DocumentData } from 'firebase/firestore'
 import {
   AppShell,
+  Avatar,
   Burger,
   Header,
   Loader,
@@ -14,6 +15,7 @@ import {
 import { useAuth } from '../Globals/AuthContext'
 import FirestoreProvider from '../Globals/FirestoreContext'
 import SideNav from '../Globals/Components/SideNav'
+import { getAcronym } from '../Globals/Utilities'
 
 interface UserContextInterface {
   user: DocumentData | undefined
@@ -80,14 +82,17 @@ const UserRoute: React.FC = () => {
         header={
           <Header height={75} p="md">
             <div className="flex h-full items-center gap-x-4">
-              <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-                <Burger
-                  opened={isOpened}
-                  onClick={() => setIsOpened((prevState) => !prevState)}
-                  size="sm"
-                />
-              </MediaQuery>
-              <Text>untitled-project</Text>
+              <div className="flex-1">
+                <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+                  <Burger
+                    opened={isOpened}
+                    onClick={() => setIsOpened((prevState) => !prevState)}
+                    size="sm"
+                  />
+                </MediaQuery>
+                <Text>untitled-project</Text>
+              </div>
+              <Avatar radius="xl">{getAcronym(authedUser?.displayName)}</Avatar>
             </div>
           </Header>
         }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { Divider, ScrollArea, Table } from '@mantine/core'
 import { DocumentData } from 'firebase/firestore'
 
@@ -20,7 +20,7 @@ const History = () => {
               <td>{formatDateToWord(date)}</td>
               <td>{formatUnixToHours(recordIn)}</td>
               <td>{formatUnixToHours(out)}</td>
-              <td>{renderedHrs} hrs.</td>
+              <td className="text-center">{renderedHrs} hours</td>
             </tr>
           ))}
         </>
@@ -35,6 +35,12 @@ const History = () => {
     </>
   )
 
+  const totalHours = (): ReactNode => {
+    return records
+      ?.map((doc) => doc.renderedHrs)
+      .reduce((total, hrs) => total + hrs)
+  }
+
   useEffect(() => {
     const getRecords = async () => {
       const data = await getUserRecords()
@@ -48,7 +54,7 @@ const History = () => {
     <div className="flex h-full gap-x-4">
       <div className="flex flex-1 flex-col gap-y-1">
         <div className="mb-6 space-y-2">
-          <h1 className="text-3xl font-semibold">History</h1>
+          <h1 className="text-4xl font-semibold">Records</h1>
           <Divider />
         </div>
         <ScrollArea className="h-[70vh] w-[85vw] xs:w-full">
@@ -57,16 +63,29 @@ const History = () => {
             verticalSpacing="md"
             fontSize="md"
             highlightOnHover
+            className="table-auto"
           >
             <thead className="sticky top-0 bg-gray-50">
               <tr className="w-fit">
                 <th>Date</th>
                 <th>In</th>
                 <th>Out</th>
-                <th className="whitespace-nowrap">Rendered Hours</th>
+                <th className="whitespace-nowrap !text-center">
+                  Rendered Hours
+                </th>
               </tr>
             </thead>
             <tbody>{tableRows}</tbody>
+            {records && (
+              <tfoot className="sticky bottom-0 bg-gray-50">
+                <tr>
+                  <th className="!text-right" colSpan={3}>
+                    Total Hours:
+                  </th>
+                  <th className="!text-center">{totalHours()} hours</th>
+                </tr>
+              </tfoot>
+            )}
           </Table>
         </ScrollArea>
       </div>

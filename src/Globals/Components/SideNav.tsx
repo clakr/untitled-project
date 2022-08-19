@@ -5,8 +5,8 @@ import { Button, Divider, Navbar } from '@mantine/core'
 import {
   faSignOutAlt,
   faChartLine,
-  faHistory,
-  faUserAlt
+  faUserAlt,
+  faFileLines
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useAuth } from '../AuthContext'
@@ -32,7 +32,7 @@ const SideNav = ({ isOpened }: { isOpened: boolean }) => {
     >
       <div className="flex flex-col gap-y-2">
         <SideNavLink label="Dashboard" to="/u/dashboard" icon={faChartLine} />
-        <SideNavLink label="History" to="/u/history" icon={faHistory} />
+        <SideNavLink label="Records" to="/u/records" icon={faFileLines} />
         <Divider />
         <SideNavLink label="Profile" to="/u/profile" icon={faUserAlt} />
         <SideNavLink label="404" to="/u/qwe" icon={faUserAlt} />
