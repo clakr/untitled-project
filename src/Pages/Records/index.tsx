@@ -57,7 +57,7 @@ const History = () => {
           <h1 className="text-4xl font-semibold">Records</h1>
           <Divider />
         </div>
-        <ScrollArea className="h-[70vh] w-[85vw] xs:w-full">
+        <ScrollArea className="xs:w-full h-[70vh] w-[85vw]">
           <Table
             horizontalSpacing="xl"
             verticalSpacing="md"

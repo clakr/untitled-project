@@ -3,7 +3,7 @@
 # Created
 
 # Refactored
-- records/index.tsx
+- tailwind.config.cjs
 
 # Imported
 
