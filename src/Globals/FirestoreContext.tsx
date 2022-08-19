@@ -1,15 +1,25 @@
 import React, { createContext, useContext } from 'react'
 import moment from 'moment'
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
-import toast from 'react-hot-toast'
+import {
+  addDoc,
+  collection,
+  doc,
+  DocumentData,
+  DocumentReference,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  updateDoc,
+  where
+} from 'firebase/firestore'
 
 import { useAuth } from './AuthContext'
 import { firestore } from './Firebase'
-import { User } from 'firebase/auth'
 
 interface ContextInferface {
   checkDateIfExists: () => Promise<'in' | 'out'>
-  clockIn: () => Promise<void> | undefined
+  clockIn: () => Promise<DocumentReference<DocumentData> | undefined>
   clockOut: () => Promise<void> | undefined
 }
 
@@ -21,17 +31,43 @@ export const useFirestore = () => {
 
 const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
   const { authedUser } = useAuth()
-  const docRef = doc(firestore, 'record', (authedUser as User).uid)
+  const recordRef = collection(firestore, 'record')
   const dateToday = moment().format('YYYY-MM-DD')
 
-  const checkDateIfExists = async () => {
-    const docSnap = getDoc(docRef)
-    const data = (await docSnap).data()
+  const findDocId = async () => {
+    let docId = ''
+    const q = query(
+      recordRef,
+      where('userId', '==', authedUser?.uid),
+      where('date', '==', dateToday),
+      limit(1)
+    )
+    const qSnap = await getDocs(q)
 
-    if (data) {
-      if (dateToday in data && data[dateToday].out == null) {
-        return 'out'
+    if (qSnap.empty) {
+      return null
+    }
+
+    qSnap.forEach((doc) => {
+      docId = doc.id
+    })
+
+    return docId
+  }
+
+  const checkDateIfExists = async () => {
+    const docId = await findDocId()
+
+    if (docId) {
+      const docRef = doc(recordRef, docId)
+      const docSnap = getDoc(docRef)
+      const data = (await docSnap).data()
+
+      if (data && data.out != null) {
+        return 'in'
       }
+
+      return 'out'
     }
 
     return 'in'
@@ -41,29 +77,33 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     if (authedUser) {
       const now = moment().unix()
 
-      try {
-        setDoc(docRef, {})
-        updateDoc(docRef, {
-          [dateToday]: {
-            in: now,
-            out: null
-          }
-        })
-      } catch (error) {
-        toast.error(`${error}`)
-      }
+      return await addDoc(recordRef, {
+        userId: authedUser.uid,
+        date: dateToday,
+        in: now,
+        out: null,
+        renderedHrs: null
+      })
     }
   }
 
-  const clockOut = () => {
-    if (authedUser) {
-      const docRef = doc(firestore, 'record', authedUser?.uid)
+  const clockOut = async () => {
+    const docId = await findDocId()
+    if (authedUser && docId) {
+      const docRef = doc(recordRef, docId)
+      const docSnap = await getDoc(docRef)
+      const data = docSnap.data()
 
-      const now = moment().unix()
+      if (data) {
+        const recordInHour = moment.unix(data.in).format('H')
+        const recordOut = moment()
+        const rendered = recordOut.subtract(recordInHour, 'hour')
 
-      return updateDoc(docRef, {
-        [`${dateToday}.out`]: now
-      })
+        return await updateDoc(docRef, {
+          out: recordOut.unix(),
+          renderedHrs: rendered.hours()
+        })
+      }
     }
   }
 
