@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 
 import AuthProvider from './Globals/AuthContext'
 import App from './App'
+import '@fontsource/poppins'
 import './index.css'
 import { createEmotionCache, MantineProvider } from '@mantine/core'
 

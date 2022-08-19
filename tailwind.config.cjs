@@ -12,6 +12,9 @@ module.exports = {
     },
     fontFamily: {
       sans: 'Poppins'
+    },
+    screens: {
+      xs: '470px'
     }
   },
   plugins: []

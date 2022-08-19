@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { ReactNode } from 'react'
 
 export const toSentenceCase = (str: string): string => {
   return str.replace(/\w\S*/g, function (txt) {
@@ -18,4 +19,12 @@ export const generateGreetings = (): string => {
   }
 
   return 'Good morning'
+}
+
+export const formatDateToWord = (date: string): ReactNode => {
+  return dayjs(date).format('MMMM DD, YYYY')
+}
+
+export const formatUnixToHours = (unix: number): ReactNode => {
+  return dayjs.unix(unix).format('hh:mm A')
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Aside, Button, Divider } from '@mantine/core'
+import { Button } from '@mantine/core'
 import {
   faHourglassStart,
   faHourglassEnd
@@ -11,20 +11,19 @@ import { useUserContext } from '../../Routes/UserRoute'
 import { useFirestore } from '../../Globals/FirestoreContext'
 import toast from 'react-hot-toast'
 import { FirebaseError } from 'firebase/app'
-import { Month } from '@mantine/dates'
+import AsideCalendar from '../../Globals/Components/AsideCalendar'
 
 const Dashboard: React.FC = () => {
   const { user, setIsLoading } = useUserContext()
-  const { checkDateIfExists, clockIn, clockOut } = useFirestore()
+  const { checkRecordIfExists, clockIn, clockOut } = useFirestore()
   const [showButton, setShowButton] = useState<string>()
   const [loading, setLoading] = useState<boolean>(false)
-  const [month, setMonth] = useState(new Date())
 
   useEffect(() => {
     setIsLoading(true)
 
     const checkRecordToday = async () => {
-      setShowButton(await checkDateIfExists())
+      setShowButton(await checkRecordIfExists())
     }
 
     checkRecordToday()
@@ -34,7 +33,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="flex h-full gap-x-4">
       <div className="flex flex-1 flex-col gap-y-4">
-        <h1 className="text-4xl md:text-5xl xl:text-6xl">
+        <h1 className="md:text-5xl xl:text-6xl text-4xl">
           {`${generateGreetings()}, `}
           <span className="whitespace-nowrap font-bold">{`${user?.name.first}!`}</span>
         </h1>
@@ -46,7 +45,7 @@ const Dashboard: React.FC = () => {
               setLoading(true)
               try {
                 await clockIn()
-                setShowButton(await checkDateIfExists())
+                setShowButton(await checkRecordIfExists())
                 toast.success('Clocked in at {now}')
               } catch (error) {
                 if (error instanceof FirebaseError) {
@@ -68,7 +67,7 @@ const Dashboard: React.FC = () => {
               setLoading(true)
               try {
                 await clockOut()
-                setShowButton(await checkDateIfExists())
+                setShowButton(await checkRecordIfExists())
                 toast.success('Clocked out at {now}')
               } catch (error) {
                 if (error instanceof FirebaseError) {
@@ -82,16 +81,7 @@ const Dashboard: React.FC = () => {
           </Button>
         )}
       </div>
-      <Aside
-        hidden
-        hiddenBreakpoint="lg"
-        width={{ lg: 300 }}
-        classNames={{ root: 'flex flex-col gap-y-2 p-4' }}
-      >
-        <h2 className="text-2xl font-bold">Calendar</h2>
-        <Divider />
-        <Month month={month} value={month} />
-      </Aside>
+      <AsideCalendar />
     </div>
   )
 }

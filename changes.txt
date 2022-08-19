@@ -1,18 +1,14 @@
 > COMMIT
 
 # Created
+- Table to display data @ history/index.tsx
 
 # Refactored
-- generateGreetings() @ Utilities.tsx
-- FirestoreContext.tsx
-- dashboard/index.tsx
 
 # Imported
-- dayjs, removed momentjs
-- mantine dates
 
 ## TODO
-- Displaying data
+- Displaying data (BETTER)
 - Wrong Password Error redirects to Register Form
 
 ## NOTES

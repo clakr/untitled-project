@@ -8,7 +8,7 @@ import {
   DocumentReference,
   getDoc,
   getDocs,
-  limit,
+  orderBy,
   query,
   updateDoc,
   where
@@ -18,9 +18,10 @@ import { useAuth } from './AuthContext'
 import { firestore } from './Firebase'
 
 interface ContextInferface {
-  checkDateIfExists: () => Promise<'in' | 'out'>
+  checkRecordIfExists: () => Promise<'in' | 'out'>
   clockIn: () => Promise<DocumentReference<DocumentData> | undefined>
   clockOut: () => Promise<void> | undefined
+  getUserRecords: () => Promise<DocumentData[] | null>
 }
 
 const FirestoreContext = createContext<ContextInferface>({} as ContextInferface)
@@ -36,11 +37,12 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
 
   const findDocId = async () => {
     let docId = ''
+    let max = 0
+
     const q = query(
       recordRef,
       where('userId', '==', authedUser?.uid),
-      where('date', '==', dateToday),
-      limit(1)
+      where('date', '==', dateToday)
     )
     const qSnap = await getDocs(q)
 
@@ -49,13 +51,18 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     }
 
     qSnap.forEach((doc) => {
-      docId = doc.id
+      const recordIn = doc.data().in
+
+      if (max <= recordIn) {
+        docId = doc.id
+        max = max <= recordIn ? recordIn : max
+      }
     })
 
     return docId
   }
 
-  const checkDateIfExists = async () => {
+  const checkRecordIfExists = async () => {
     const docId = await findDocId()
 
     if (docId) {
@@ -107,10 +114,31 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     }
   }
 
+  const getUserRecords = async () => {
+    const records: DocumentData[] = []
+    const q = query(
+      recordRef,
+      where('userId', '==', authedUser?.uid),
+      orderBy('in', 'desc')
+    )
+    const qSnap = await getDocs(q)
+
+    qSnap.forEach((doc) => {
+      records.push({ docId: doc.id, ...doc.data() })
+    })
+
+    if (records.length > 0) {
+      return records
+    }
+
+    return null
+  }
+
   const value: ContextInferface = {
-    checkDateIfExists,
+    checkRecordIfExists,
     clockIn,
-    clockOut
+    clockOut,
+    getUserRecords
   }
 
   return (

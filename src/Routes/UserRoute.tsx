@@ -75,6 +75,7 @@ const UserRoute: React.FC = () => {
       <AppShell
         navbarOffsetBreakpoint="sm"
         asideOffsetBreakpoint="sm"
+        padding="xl"
         navbar={<SideNav isOpened={isOpened} />}
         header={
           <Header height={75} p="md">
