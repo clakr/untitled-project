@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import {
   addDoc,
   collection,
@@ -32,7 +32,7 @@ export const useFirestore = () => {
 const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
   const { authedUser } = useAuth()
   const recordRef = collection(firestore, 'record')
-  const dateToday = moment().format('YYYY-MM-DD')
+  const dateToday = dayjs().format('YYYY-MM-DD')
 
   const findDocId = async () => {
     let docId = ''
@@ -75,7 +75,7 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
 
   const clockIn = async () => {
     if (authedUser) {
-      const now = moment().unix()
+      const now = dayjs().unix()
 
       return await addDoc(recordRef, {
         userId: authedUser.uid,
@@ -95,13 +95,13 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
       const data = docSnap.data()
 
       if (data) {
-        const recordInHour = moment.unix(data.in).format('H')
-        const recordOut = moment()
-        const rendered = recordOut.subtract(recordInHour, 'hour')
+        const recordInHour = +dayjs.unix(data.in).format('H')
+        const recordOut = dayjs()
+        const rendered = recordOut.subtract(recordInHour, 'hour').hour()
 
         return await updateDoc(docRef, {
           out: recordOut.unix(),
-          renderedHrs: rendered.hours()
+          renderedHrs: rendered
         })
       }
     }

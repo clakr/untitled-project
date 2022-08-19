@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export const toSentenceCase = (str: string): string => {
   return str.replace(/\w\S*/g, function (txt) {
@@ -7,7 +7,7 @@ export const toSentenceCase = (str: string): string => {
 }
 
 export const generateGreetings = (): string => {
-  const hour = moment().hour()
+  const hour = dayjs().hour()
 
   if (hour > 16) {
     return 'Good evening'

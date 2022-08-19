@@ -3,9 +3,13 @@
 # Created
 
 # Refactored
-- FirestoreContext.tsx and Backend Models
+- generateGreetings() @ Utilities.tsx
+- FirestoreContext.tsx
+- dashboard/index.tsx
 
 # Imported
+- dayjs, removed momentjs
+- mantine dates
 
 ## TODO
 - Displaying data
