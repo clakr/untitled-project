@@ -6,7 +6,8 @@ import {
   faSignOutAlt,
   faChartLine,
   faUserAlt,
-  faFileLines
+  faFileLines,
+  faTimeline
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useAuth } from '../AuthContext'
@@ -32,7 +33,8 @@ const SideNav = ({ isOpened }: { isOpened: boolean }) => {
     >
       <div className="flex flex-col gap-y-2">
         <SideNavLink label="Dashboard" to="/u/dashboard" icon={faChartLine} />
-        <SideNavLink label="Records" to="/u/records" icon={faFileLines} />
+        <SideNavLink label="Timeline" to="/u/timeline" icon={faTimeline} />
+        <SideNavLink label="Reports" to="/u/reports" icon={faFileLines} />
         <Divider />
         <SideNavLink label="Profile" to="/u/profile" icon={faUserAlt} />
         <SideNavLink label="404" to="/u/qwe" icon={faUserAlt} />

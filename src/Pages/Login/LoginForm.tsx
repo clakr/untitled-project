@@ -7,6 +7,8 @@ import { useAuth } from '../../Globals/AuthContext'
 import { LinkCustom } from '../../Globals/Components'
 import FormWrapper from '../../Globals/Components/FormWrapper'
 import toast from 'react-hot-toast'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAt, faKey } from '@fortawesome/free-solid-svg-icons'
 
 type EmailPasswordFormType = {
   email: string
@@ -80,6 +82,7 @@ const LoginForm: React.FC = () => {
               classNames={{ label: 'px-3' }}
               autoComplete="on"
               required
+              icon={<FontAwesomeIcon icon={faAt} />}
               {...form.getInputProps('email')}
             />
             <PasswordInput
@@ -92,6 +95,7 @@ const LoginForm: React.FC = () => {
               }}
               autoComplete="on"
               required
+              icon={<FontAwesomeIcon icon={faKey} />}
               {...form.getInputProps('password')}
             />
           </div>

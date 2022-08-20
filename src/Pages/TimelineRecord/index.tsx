@@ -1,14 +1,22 @@
 import React, { ReactNode, useEffect, useState } from 'react'
-import { Divider, ScrollArea, Timeline } from '@mantine/core'
+import { Button, Divider, Modal, ScrollArea, Timeline } from '@mantine/core'
 import { DocumentData } from 'firebase/firestore'
 
 import { useFirestore } from '../../Globals/FirestoreContext'
 import AsideCalendar from '../../Globals/Components/AsideCalendar'
 import { formatDateToWord, formatUnixToHours } from '../../Globals/Utilities'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faCalendarCheck } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCalendar,
+  faCalendarCheck,
+  faCalendarDay,
+  faCalendarPlus,
+  faClock
+} from '@fortawesome/free-solid-svg-icons'
+import { DatePicker, TimeRangeInput } from '@mantine/dates'
+import dayjs from 'dayjs'
 
-const History = () => {
+const RecordTimeline = () => {
   const { getUserRecords } = useFirestore()
   const [records, setRecords] = useState<DocumentData[] | null>(null)
 
@@ -27,6 +35,14 @@ const History = () => {
   const TimelineRecord = () => {
     const [timelineActive, setTimelineActive] = useState<number>(0)
 
+    const recordFrom = dayjs().hour(9).minute(0).toDate()
+    const recordTo = dayjs(recordFrom).add(9, 'hours').toDate()
+    const [recordTime, setRecordTime] = useState<[Date, Date]>([
+      recordFrom,
+      recordTo
+    ])
+    const [opened, setOpened] = useState<boolean>(false)
+
     useEffect(() => {
       if (records) {
         setTimelineActive(
@@ -37,14 +53,62 @@ const History = () => {
 
     return (
       <>
+        <Modal
+          opened={opened}
+          onClose={() => setOpened(false)}
+          overlayColor="gray"
+          overlayOpacity={0.55}
+          overlayBlur={3}
+          title="Add New Record"
+          classNames={{ body: 'flex flex-col gap-y-4' }}
+        >
+          <DatePicker
+            placeholder="January 1, 2022"
+            label="Date"
+            icon={<FontAwesomeIcon icon={faCalendarDay} />}
+            classNames={{ label: 'px-3' }}
+          />
+          <TimeRangeInput
+            label="Duration"
+            value={recordTime}
+            icon={<FontAwesomeIcon icon={faClock} />}
+            classNames={{ label: 'px-3' }}
+          />
+          {/* TODO
+            > date
+            > in
+            > out */}
+        </Modal>
+
         {records
           ? (
           <Timeline
-            bulletSize={30}
-            classNames={{ itemTitle: '!text-xl px-4' }}
+            bulletSize={40}
+            classNames={{ itemTitle: '!text-3xl px-4' }}
             active={timelineActive}
             reverseActive
           >
+            <Timeline.Item
+              title="Add Record"
+              lineVariant="dotted"
+              bullet={<FontAwesomeIcon icon={faCalendarPlus} />}
+            >
+              <div className="flex h-[150px] px-8 py-4">
+                <Button
+                  onClick={() => setOpened(true)}
+                  color="dark"
+                  variant="subtle"
+                  classNames={{
+                    root: 'flex-1 !h-full group',
+                    label:
+                      'flex flex-col justify-center gap-y-2 group-hover:text-slate-50 text-gray-400'
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCalendarPlus} size="3x" />
+                  <h3 className="text-xs">Add new record for specific date</h3>
+                </Button>
+              </div>
+            </Timeline.Item>
             {records.map(({ docId, date, in: recordIn, out, renderedHrs }) => {
               return (
                 <Timeline.Item
@@ -112,10 +176,10 @@ const History = () => {
     <div className="flex h-full gap-x-4">
       <div className="flex flex-1 flex-col gap-y-1">
         <div className="mb-6 space-y-2">
-          <h1 className="text-4xl font-semibold">Records</h1>
+          <h1 className="text-4xl font-semibold">Timeline</h1>
           <Divider />
         </div>
-        <ScrollArea className="h-[70vh] w-full lg:h-[74vh] 2xl:h-[78vh]">
+        <ScrollArea className="h-[75vh] w-full">
           <TimelineRecord />
         </ScrollArea>
       </div>
@@ -124,4 +188,4 @@ const History = () => {
   )
 }
 
-export default History
+export default RecordTimeline

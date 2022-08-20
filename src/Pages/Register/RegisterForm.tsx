@@ -7,12 +7,16 @@ import {
   faUserPlus,
   faCircleCheck,
   faIdCard,
-  faEnvelopeOpen
+  faEnvelopeOpen,
+  faAt,
+  faKey,
+  faFont
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useAuth } from '../../Globals/AuthContext'
 import { LinkCustom, FormWrapper } from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 type EmailPasswordFormType = {
   email: string
@@ -117,6 +121,7 @@ const EmailPasswordForm: React.FC<FormInterface<EmailPasswordFormType>> = ({
         classNames={{ label: 'px-3' }}
         autoComplete="on"
         required
+        icon={<FontAwesomeIcon icon={faAt} />}
         {...form.getInputProps('email')}
       />
       <div className="flex flex-col gap-y-4 sm:gap-x-4 md:flex-row lg:flex-col xl:flex-row">
@@ -130,6 +135,7 @@ const EmailPasswordForm: React.FC<FormInterface<EmailPasswordFormType>> = ({
           }}
           autoComplete="on"
           required
+          icon={<FontAwesomeIcon icon={faKey} />}
           {...form.getInputProps('password')}
         />
         <PasswordInput
@@ -141,6 +147,7 @@ const EmailPasswordForm: React.FC<FormInterface<EmailPasswordFormType>> = ({
           }}
           autoComplete="on"
           required
+          icon={<FontAwesomeIcon icon={faKey} />}
           disabled={form.values.password.length === 0}
           {...form.getInputProps('confirmPassword')}
         />
@@ -196,6 +203,7 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
           classNames={{ root: 'md:flex-1', label: 'px-3' }}
           required
           autoComplete="on"
+          icon={<FontAwesomeIcon icon={faFont} />}
           {...form.getInputProps('first')}
         />
         <TextInput
@@ -204,6 +212,7 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
           classNames={{ root: 'md:flex-1', label: 'px-3' }}
           required
           autoComplete="on"
+          icon={<FontAwesomeIcon icon={faFont} />}
           {...form.getInputProps('last')}
         />
         <TextInput
@@ -211,6 +220,7 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
           placeholder="F."
           classNames={{ root: 'md:flex-1', label: 'px-3' }}
           autoComplete="on"
+          icon={<FontAwesomeIcon icon={faFont} />}
           {...form.getInputProps('middle')}
         />
       </div>
