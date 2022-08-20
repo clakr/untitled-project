@@ -14,7 +14,7 @@ const AsideCalendar = () => {
     >
       <h2 className="text-2xl font-bold">Calendar</h2>
       <Divider />
-      <Month month={month} value={month} />
+      <Month month={month} value={month} firstDayOfWeek="sunday" />
     </Aside>
   )
 }

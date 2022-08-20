@@ -39,6 +39,10 @@ export const formatDateToWord = (date: string): ReactNode => {
   return dayjs(date).format('MMMM DD, YYYY')
 }
 
-export const formatUnixToHours = (unix: number): ReactNode => {
-  return dayjs.unix(unix).format('hh:mm A')
+export const formatUnixToHours = (unix: number | null): ReactNode => {
+  if (unix) {
+    return dayjs.unix(unix).format('hh:mm A')
+  }
+
+  return null
 }

@@ -3,7 +3,7 @@
 # Created
 
 # Refactored
-- tailwind.config.cjs
+- displaying data @ records/index.html 
 
 # Imported
 
@@ -12,6 +12,5 @@
 - Wrong Password Error redirects to Register Form
 
 ## NOTES
-- Displaying data @ history/index.tsx (BETTER)
 - What about break time hours?
 - Email Availability Checker @ Form Stepper 1
