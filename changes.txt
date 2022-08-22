@@ -1,14 +1,13 @@
 > COMMIT
 
 # Created
-- addNewRecord() @ FirestoreContext.tsx
 
 # Refactored
+- addNewRecord() to include breaktime hours @ FirestoreContext.tsx 
 
 # Imported
 
 ## TODO
-- What about break time hours?
 - Wrong Password Error redirects to Register Form
 
 ## NOTES

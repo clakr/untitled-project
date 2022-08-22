@@ -1,5 +1,12 @@
 import React, { ReactNode, useEffect, useState } from 'react'
-import { Button, Divider, Modal, ScrollArea, Timeline } from '@mantine/core'
+import {
+  Button,
+  Divider,
+  Modal,
+  ScrollArea,
+  Switch,
+  Timeline
+} from '@mantine/core'
 import { DocumentData } from 'firebase/firestore'
 
 import { useFirestore } from '../../Globals/FirestoreContext'
@@ -11,7 +18,8 @@ import {
   faCalendarCheck,
   faCalendarDay,
   faCalendarPlus,
-  faClock
+  faClock,
+  faMugHot
 } from '@fortawesome/free-solid-svg-icons'
 import { DatePicker, TimeRangeInput } from '@mantine/dates'
 import dayjs from 'dayjs'
@@ -21,13 +29,15 @@ import { AddRecordType } from '../../Globals/Types'
 import toast from 'react-hot-toast'
 
 const initialValues: AddRecordType = {
-  date: new Date(),
-  duration: []
+  date: '' as unknown as Date,
+  duration: [],
+  breakDuration: []
 }
 
 const initialDirty = {
   date: false,
-  duration: false
+  duration: false,
+  breakDuration: false
 }
 
 const RecordTimeline = () => {
@@ -51,6 +61,7 @@ const RecordTimeline = () => {
   const TimelineRecord = () => {
     const [timelineActive, setTimelineActive] = useState<number>(0)
     const [opened, setOpened] = useState<boolean>(false)
+    const [switchChecked, setSwitchChecked] = useState<boolean>(true)
 
     const form = useForm<AddRecordType>({
       initialValues,
@@ -71,6 +82,7 @@ const RecordTimeline = () => {
           opened={opened}
           onClose={() => {
             setOpened(false)
+            setSwitchChecked(true)
             form.reset()
           }}
           overlayColor="gray"
@@ -95,6 +107,7 @@ const RecordTimeline = () => {
               placeholder="January 1, 2022"
               label="Date"
               icon={<FontAwesomeIcon icon={faCalendarDay} />}
+              firstDayOfWeek="sunday"
               classNames={{ label: 'px-3' }}
               {...form.getInputProps('date')}
               onChange={(value) => {
@@ -102,6 +115,12 @@ const RecordTimeline = () => {
                   dayjs(value).hour(9).second(0).toDate(),
                   dayjs(value).hour(18).second(0).toDate()
                 ])
+                switchChecked &&
+                  form.setFieldValue('breakDuration', [
+                    dayjs(value).hour(12).second(0).toDate(),
+                    dayjs(value).hour(13).second(0).toDate()
+                  ])
+
                 form.setFieldValue('date', value)
               }}
             />
@@ -110,9 +129,45 @@ const RecordTimeline = () => {
               icon={<FontAwesomeIcon icon={faClock} />}
               classNames={{ label: 'px-3' }}
               {...form.getInputProps('duration')}
-              onChange={(value) => console.log(value)}
               disabled={!form.isDirty('date')}
+              onChange={(value) =>
+                form.setFieldValue(
+                  'duration',
+                  value.map((time) =>
+                    dayjs(form.values.date).hour(time.getHours()).toDate()
+                  )
+                )
+              }
             />
+            <Switch
+              label="Break Hours"
+              checked={switchChecked}
+              onChange={() => {
+                form.setFieldValue('breakDuration', [])
+                setSwitchChecked((prevState) => !prevState)
+              }}
+              classNames={{ root: 'my-2' }}
+            />
+            {switchChecked && (
+              <>
+                <Divider label="Miscellaneous" labelPosition="center" />
+                <TimeRangeInput
+                  label="Break Hours"
+                  icon={<FontAwesomeIcon icon={faMugHot} />}
+                  classNames={{ label: 'px-3' }}
+                  {...form.getInputProps('breakDuration')}
+                  disabled={!form.isDirty('date')}
+                  onChange={(value) =>
+                    form.setFieldValue(
+                      'breakDuration',
+                      value.map((time) =>
+                        dayjs(form.values.date).hour(time.getHours()).toDate()
+                      )
+                    )
+                  }
+                />
+              </>
+            )}
             <Button
               type="submit"
               classNames={{ root: 'my-2' }}

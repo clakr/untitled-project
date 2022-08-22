@@ -139,17 +139,30 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     return null
   }
 
-  const addNewRecord = async ({ date, duration }: AddRecordType) => {
-    const recordInHour = +dayjs(duration[0]).format('H')
+  const addNewRecord = async ({
+    date,
+    duration,
+    breakDuration
+  }: AddRecordType) => {
+    const recordIn = dayjs(duration[0])
     const recordOut = dayjs(duration[1])
-    const renderedHrs = recordOut.subtract(recordInHour, 'hour').hour()
+
+    let renderedHrs = recordOut.diff(recordIn, 'hours')
+
+    if (breakDuration) {
+      const breakIn = dayjs(breakDuration[0])
+      const breakOut = dayjs(breakDuration[1])
+
+      renderedHrs =
+        recordOut.diff(recordIn, 'hour') - breakOut.diff(breakIn, 'hour')
+    }
 
     if (authedUser) {
       return await addDoc(recordRef, {
         userId: authedUser.uid,
         date: dayjs(date).format('YYYY-MM-DD'),
-        in: dayjs(duration[0]).unix(),
-        out: dayjs(duration[1]).unix(),
+        in: recordIn.unix(),
+        out: recordOut.unix(),
         renderedHrs
       })
     }
