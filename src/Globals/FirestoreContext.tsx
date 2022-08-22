@@ -16,12 +16,17 @@ import {
 
 import { useAuth } from './AuthContext'
 import { firestore } from './Firebase'
+import { AddRecordType } from './Types'
 
 interface ContextInferface {
   checkRecordIfExists: () => Promise<'in' | 'out'>
   clockIn: () => Promise<DocumentReference<DocumentData> | undefined>
   clockOut: () => Promise<void> | undefined
   getUserRecords: () => Promise<DocumentData[] | null>
+  addNewRecord: ({
+    date,
+    duration
+  }: AddRecordType) => Promise<DocumentReference<DocumentData> | undefined>
 }
 
 const FirestoreContext = createContext<ContextInferface>({} as ContextInferface)
@@ -104,11 +109,11 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
       if (data) {
         const recordInHour = +dayjs.unix(data.in).format('H')
         const recordOut = dayjs()
-        const rendered = recordOut.subtract(recordInHour, 'hour').hour()
+        const renderedHrs = recordOut.subtract(recordInHour, 'hour').hour()
 
         return await updateDoc(docRef, {
           out: recordOut.unix(),
-          renderedHrs: rendered
+          renderedHrs
         })
       }
     }
@@ -134,11 +139,28 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     return null
   }
 
+  const addNewRecord = async ({ date, duration }: AddRecordType) => {
+    const recordInHour = +dayjs(duration[0]).format('H')
+    const recordOut = dayjs(duration[1])
+    const renderedHrs = recordOut.subtract(recordInHour, 'hour').hour()
+
+    if (authedUser) {
+      return await addDoc(recordRef, {
+        userId: authedUser.uid,
+        date: dayjs(date).format('YYYY-MM-DD'),
+        in: dayjs(duration[0]).unix(),
+        out: dayjs(duration[1]).unix(),
+        renderedHrs
+      })
+    }
+  }
+
   const value: ContextInferface = {
     checkRecordIfExists,
     clockIn,
     clockOut,
-    getUserRecords
+    getUserRecords,
+    addNewRecord
   }
 
   return (

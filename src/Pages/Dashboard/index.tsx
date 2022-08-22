@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="flex h-full gap-x-4">
       <div className="flex flex-1 flex-col gap-y-4">
-        <h1 className="md:text-5xl xl:text-6xl text-4xl">
+        <h1 className="text-4xl md:text-5xl xl:text-6xl">
           {`${generateGreetings()}, `}
           <span className="whitespace-nowrap font-bold">{`${user?.name.first}!`}</span>
         </h1>

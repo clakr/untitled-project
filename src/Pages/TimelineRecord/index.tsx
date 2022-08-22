@@ -15,10 +15,26 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { DatePicker, TimeRangeInput } from '@mantine/dates'
 import dayjs from 'dayjs'
+import { useForm } from '@mantine/form'
+import { useUserContext } from '../../Routes/UserRoute'
+import { AddRecordType } from '../../Globals/Types'
+import toast from 'react-hot-toast'
+
+const initialValues: AddRecordType = {
+  date: new Date(),
+  duration: []
+}
+
+const initialDirty = {
+  date: false,
+  duration: false
+}
 
 const RecordTimeline = () => {
-  const { getUserRecords } = useFirestore()
+  const { setIsLoading } = useUserContext()
+  const { getUserRecords, addNewRecord } = useFirestore()
   const [records, setRecords] = useState<DocumentData[] | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const DescList = ({ label, value }: { label: string; value: ReactNode }) => {
     return (
@@ -34,14 +50,12 @@ const RecordTimeline = () => {
 
   const TimelineRecord = () => {
     const [timelineActive, setTimelineActive] = useState<number>(0)
-
-    const recordFrom = dayjs().hour(9).minute(0).toDate()
-    const recordTo = dayjs(recordFrom).add(9, 'hours').toDate()
-    const [recordTime, setRecordTime] = useState<[Date, Date]>([
-      recordFrom,
-      recordTo
-    ])
     const [opened, setOpened] = useState<boolean>(false)
+
+    const form = useForm<AddRecordType>({
+      initialValues,
+      initialDirty
+    })
 
     useEffect(() => {
       if (records) {
@@ -55,29 +69,58 @@ const RecordTimeline = () => {
       <>
         <Modal
           opened={opened}
-          onClose={() => setOpened(false)}
+          onClose={() => {
+            setOpened(false)
+            form.reset()
+          }}
           overlayColor="gray"
           overlayOpacity={0.55}
           overlayBlur={3}
           title="Add New Record"
-          classNames={{ body: 'flex flex-col gap-y-4' }}
         >
-          <DatePicker
-            placeholder="January 1, 2022"
-            label="Date"
-            icon={<FontAwesomeIcon icon={faCalendarDay} />}
-            classNames={{ label: 'px-3' }}
-          />
-          <TimeRangeInput
-            label="Duration"
-            value={recordTime}
-            icon={<FontAwesomeIcon icon={faClock} />}
-            classNames={{ label: 'px-3' }}
-          />
-          {/* TODO
-            > date
-            > in
-            > out */}
+          <form
+            className="flex flex-col gap-y-4"
+            onSubmit={form.onSubmit(async (values) => {
+              setLoading(true)
+              try {
+                await addNewRecord({ ...values })
+              } catch (error) {
+                toast.error(`${error}`)
+              } finally {
+                setLoading(false)
+              }
+            })}
+          >
+            <DatePicker
+              placeholder="January 1, 2022"
+              label="Date"
+              icon={<FontAwesomeIcon icon={faCalendarDay} />}
+              classNames={{ label: 'px-3' }}
+              {...form.getInputProps('date')}
+              onChange={(value) => {
+                form.setFieldValue('duration', [
+                  dayjs(value).hour(9).second(0).toDate(),
+                  dayjs(value).hour(18).second(0).toDate()
+                ])
+                form.setFieldValue('date', value)
+              }}
+            />
+            <TimeRangeInput
+              label="Duration"
+              icon={<FontAwesomeIcon icon={faClock} />}
+              classNames={{ label: 'px-3' }}
+              {...form.getInputProps('duration')}
+              onChange={(value) => console.log(value)}
+              disabled={!form.isDirty('date')}
+            />
+            <Button
+              type="submit"
+              classNames={{ root: 'my-2' }}
+              loading={loading}
+            >
+              Add Record
+            </Button>
+          </form>
         </Modal>
 
         {records
@@ -151,26 +194,48 @@ const RecordTimeline = () => {
           </Timeline>
             )
           : (
-          <h1>wala</h1>
+          <Timeline
+            bulletSize={40}
+            classNames={{ itemTitle: '!text-3xl px-4' }}
+            reverseActive
+          >
+            <Timeline.Item
+              title="Add Record"
+              lineVariant="dotted"
+              bullet={<FontAwesomeIcon icon={faCalendarPlus} />}
+            >
+              <div className="flex h-[150px] px-8 py-4">
+                <Button
+                  onClick={() => setOpened(true)}
+                  color="dark"
+                  variant="subtle"
+                  classNames={{
+                    root: 'flex-1 !h-full group',
+                    label:
+                      'flex flex-col justify-center gap-y-2 group-hover:text-slate-50 text-gray-400'
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCalendarPlus} size="3x" />
+                  <h3 className="text-xs">Add new record for specific date</h3>
+                </Button>
+              </div>
+            </Timeline.Item>
+          </Timeline>
             )}
       </>
     )
   }
 
-  // const totalHours = (): ReactNode => {
-  //   return records
-  //     ?.map((doc) => doc.renderedHrs)
-  //     .reduce((total, hrs) => total + hrs)
-  // }
-
   useEffect(() => {
+    setIsLoading(true)
     const getRecords = async () => {
       const data = await getUserRecords()
       setRecords(data)
     }
 
     getRecords()
-  }, [])
+    setIsLoading(false)
+  }, [loading])
 
   return (
     <div className="flex h-full gap-x-4">

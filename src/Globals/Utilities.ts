@@ -46,3 +46,9 @@ export const formatUnixToHours = (unix: number | null): ReactNode => {
 
   return null
 }
+
+// const totalHours = (): ReactNode => {
+//   return records
+//     ?.map((doc) => doc.renderedHrs)
+//     .reduce((total, hrs) => total + hrs)
+// }

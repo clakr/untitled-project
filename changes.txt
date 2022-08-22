@@ -1,16 +1,15 @@
 > COMMIT
 
 # Created
-- Add Record Functionality @ TimelineRecord/index.tsx
+- addNewRecord() @ FirestoreContext.tsx
 
 # Refactored
 
 # Imported
 
 ## TODO
-- Add Record to specific date ( Backend )
+- What about break time hours?
 - Wrong Password Error redirects to Register Form
 
 ## NOTES
-- What about break time hours?
 - Email Availability Checker @ Form Stepper 1
