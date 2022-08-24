@@ -1,9 +1,11 @@
 > COMMIT
 
 # Created
+- DescList.tsx
+- RecordModal.tsx
 
 # Refactored
-- addNewRecord() to include breaktime hours @ FirestoreContext.tsx 
+- TimelineRecord/index.tsx
 
 # Imported
 
@@ -11,4 +13,9 @@
 - Wrong Password Error redirects to Register Form
 
 ## NOTES
-- Email Availability Checker @ Form Stepper 1
+- Dashboard
+  -> Show atleast 5 latest records 
+- Delete Record
+- Edit Record
+- Reports
+  -> Total Hrs of all records

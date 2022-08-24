@@ -1,72 +1,35 @@
-import React, { ReactNode, useEffect, useState } from 'react'
-import {
-  Button,
-  Divider,
-  Modal,
-  ScrollArea,
-  Switch,
-  Timeline
-} from '@mantine/core'
+import React, { useEffect, useState } from 'react'
+
 import { DocumentData } from 'firebase/firestore'
 
-import { useFirestore } from '../../Globals/FirestoreContext'
-import AsideCalendar from '../../Globals/Components/AsideCalendar'
-import { formatDateToWord, formatUnixToHours } from '../../Globals/Utilities'
+import { Button, Divider, ScrollArea, Timeline } from '@mantine/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCalendar,
   faCalendarCheck,
-  faCalendarDay,
   faCalendarPlus,
-  faClock,
-  faMugHot
+  faSliders
 } from '@fortawesome/free-solid-svg-icons'
-import { DatePicker, TimeRangeInput } from '@mantine/dates'
-import dayjs from 'dayjs'
-import { useForm } from '@mantine/form'
+
+import { useFirestore } from '../../Globals/FirestoreContext'
 import { useUserContext } from '../../Routes/UserRoute'
-import { AddRecordType } from '../../Globals/Types'
-import toast from 'react-hot-toast'
 
-const initialValues: AddRecordType = {
-  date: '' as unknown as Date,
-  duration: [],
-  breakDuration: []
-}
+import AsideCalendar from '../../Globals/Components/AsideCalendar'
+import RecordModal from './RecordModal'
+import DescList from './DescList'
 
-const initialDirty = {
-  date: false,
-  duration: false,
-  breakDuration: false
-}
+import { formatDateToWord, formatUnixToHours } from '../../Globals/Utilities'
 
 const RecordTimeline = () => {
   const { setIsLoading } = useUserContext()
-  const { getUserRecords, addNewRecord } = useFirestore()
+  const { getUserRecords } = useFirestore()
   const [records, setRecords] = useState<DocumentData[] | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const DescList = ({ label, value }: { label: string; value: ReactNode }) => {
-    return (
-      <dl className="flex gap-x-2">
-        <dl className="min-w-[140px] xs:min-w-[200px]">{label}</dl>
-
-        <dd className="whitespace-nowrap font-bold text-gray-500">
-          {value ?? 'N/A'}
-        </dd>
-      </dl>
-    )
-  }
-
   const TimelineRecord = () => {
     const [timelineActive, setTimelineActive] = useState<number>(0)
-    const [opened, setOpened] = useState<boolean>(false)
-    const [switchChecked, setSwitchChecked] = useState<boolean>(true)
-
-    const form = useForm<AddRecordType>({
-      initialValues,
-      initialDirty
-    })
+    const [addOpen, setAddOpen] = useState<boolean>(false)
+    const [editOpen, setEditOpen] = useState<boolean>(false)
 
     useEffect(() => {
       if (records) {
@@ -78,105 +41,22 @@ const RecordTimeline = () => {
 
     return (
       <>
-        <Modal
-          opened={opened}
+        <RecordModal
+          loadingState={{ loading, setLoading }}
+          opened={addOpen}
           onClose={() => {
-            setOpened(false)
-            setSwitchChecked(true)
-            form.reset()
+            setAddOpen(false)
           }}
-          overlayColor="gray"
-          overlayOpacity={0.55}
-          overlayBlur={3}
           title="Add New Record"
-        >
-          <form
-            className="flex flex-col gap-y-4"
-            onSubmit={form.onSubmit(async (values) => {
-              setLoading(true)
-              try {
-                await addNewRecord({ ...values })
-              } catch (error) {
-                toast.error(`${error}`)
-              } finally {
-                setLoading(false)
-              }
-            })}
-          >
-            <DatePicker
-              placeholder="January 1, 2022"
-              label="Date"
-              icon={<FontAwesomeIcon icon={faCalendarDay} />}
-              firstDayOfWeek="sunday"
-              classNames={{ label: 'px-3' }}
-              {...form.getInputProps('date')}
-              onChange={(value) => {
-                form.setFieldValue('duration', [
-                  dayjs(value).hour(9).second(0).toDate(),
-                  dayjs(value).hour(18).second(0).toDate()
-                ])
-                switchChecked &&
-                  form.setFieldValue('breakDuration', [
-                    dayjs(value).hour(12).second(0).toDate(),
-                    dayjs(value).hour(13).second(0).toDate()
-                  ])
-
-                form.setFieldValue('date', value)
-              }}
-            />
-            <TimeRangeInput
-              label="Duration"
-              icon={<FontAwesomeIcon icon={faClock} />}
-              classNames={{ label: 'px-3' }}
-              {...form.getInputProps('duration')}
-              disabled={!form.isDirty('date')}
-              onChange={(value) =>
-                form.setFieldValue(
-                  'duration',
-                  value.map((time) =>
-                    dayjs(form.values.date).hour(time.getHours()).toDate()
-                  )
-                )
-              }
-            />
-            <Switch
-              label="Break Hours"
-              checked={switchChecked}
-              onChange={() => {
-                form.setFieldValue('breakDuration', [])
-                setSwitchChecked((prevState) => !prevState)
-              }}
-              classNames={{ root: 'my-2' }}
-            />
-            {switchChecked && (
-              <>
-                <Divider label="Miscellaneous" labelPosition="center" />
-                <TimeRangeInput
-                  label="Break Hours"
-                  icon={<FontAwesomeIcon icon={faMugHot} />}
-                  classNames={{ label: 'px-3' }}
-                  {...form.getInputProps('breakDuration')}
-                  disabled={!form.isDirty('date')}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      'breakDuration',
-                      value.map((time) =>
-                        dayjs(form.values.date).hour(time.getHours()).toDate()
-                      )
-                    )
-                  }
-                />
-              </>
-            )}
-            <Button
-              type="submit"
-              classNames={{ root: 'my-2' }}
-              loading={loading}
-            >
-              Add Record
-            </Button>
-          </form>
-        </Modal>
+        />
+        <RecordModal
+          loadingState={{ loading, setLoading }}
+          opened={editOpen}
+          onClose={() => {
+            setEditOpen(false)
+          }}
+          title="Edit Record"
+        />
 
         {records
           ? (
@@ -193,7 +73,9 @@ const RecordTimeline = () => {
             >
               <div className="flex h-[150px] px-8 py-4">
                 <Button
-                  onClick={() => setOpened(true)}
+                  onClick={() => {
+                    setAddOpen(true)
+                  }}
                   color="dark"
                   variant="subtle"
                   classNames={{
@@ -223,7 +105,7 @@ const RecordTimeline = () => {
                         )
                   }
                 >
-                  <div className="flex flex-col gap-y-8 px-8 py-2 text-gray-400 2xl:flex-row 2xl:gap-x-20">
+                  <div className="flex flex-col gap-y-4 px-8 py-2 text-gray-400 2xl:flex-row 2xl:gap-x-20">
                     <div className="flex flex-col gap-y-2">
                       <DescList
                         label="In: "
@@ -237,11 +119,22 @@ const RecordTimeline = () => {
                         }
                       />
                     </div>
-                    <div className="flex flex-1 items-center text-center">
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Repellendus explicabo aut itaque nesciunt aliquid
-                      voluptate ratione, quis at distinctio repellat!
-                    </div>
+                    {out && (
+                      <div className="flex items-center justify-center">
+                        <Button
+                          leftIcon={<FontAwesomeIcon icon={faSliders} />}
+                          variant="subtle"
+                          size="lg"
+                          classNames={{ root: 'flex-1' }}
+                          onClick={() => {
+                            setEditOpen(true)
+                            console.log(docId)
+                          }}
+                        >
+                          Settings
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </Timeline.Item>
               )
@@ -261,7 +154,7 @@ const RecordTimeline = () => {
             >
               <div className="flex h-[150px] px-8 py-4">
                 <Button
-                  onClick={() => setOpened(true)}
+                  onClick={() => setAddOpen(true)}
                   color="dark"
                   variant="subtle"
                   classNames={{
