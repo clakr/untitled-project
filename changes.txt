@@ -6,16 +6,21 @@
 
 # Refactored
 - TimelineRecord/index.tsx
+- TimelineRecord/DescList.tsx
+- TimelineRecord/RecordModal.tsx
+- checkRecordIfExists(), getUserRecords(), addNewRecord(), editRecord() @ FirestoreContext.tsx
+- Types.tsx
+- Utilities.tsx
 
 # Imported
 
 ## TODO
+- Clock in and Out
+- Delete Record
 - Wrong Password Error redirects to Register Form
 
 ## NOTES
 - Dashboard
   -> Show atleast 5 latest records 
-- Delete Record
-- Edit Record
 - Reports
   -> Total Hrs of all records

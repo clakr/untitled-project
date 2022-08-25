@@ -18,7 +18,7 @@ import AsideCalendar from '../../Globals/Components/AsideCalendar'
 import RecordModal from './RecordModal'
 import DescList from './DescList'
 
-import { formatDateToWord, formatUnixToHours } from '../../Globals/Utilities'
+import { formatUnixToDate, formatUnixToHours } from '../../Globals/Utilities'
 
 const RecordTimeline = () => {
   const { setIsLoading } = useUserContext()
@@ -30,11 +30,12 @@ const RecordTimeline = () => {
     const [timelineActive, setTimelineActive] = useState<number>(0)
     const [addOpen, setAddOpen] = useState<boolean>(false)
     const [editOpen, setEditOpen] = useState<boolean>(false)
+    const [record, setRecord] = useState<DocumentData | null>(null)
 
     useEffect(() => {
       if (records) {
         setTimelineActive(
-          records.filter((records) => records.out != null).length - 1
+          records.filter((records) => records.recordOut != null).length - 1
         )
       }
     }, [])
@@ -45,24 +46,28 @@ const RecordTimeline = () => {
           loadingState={{ loading, setLoading }}
           opened={addOpen}
           onClose={() => {
+            setRecord(null)
             setAddOpen(false)
           }}
           title="Add New Record"
         />
+
         <RecordModal
           loadingState={{ loading, setLoading }}
           opened={editOpen}
           onClose={() => {
+            setRecord(null)
             setEditOpen(false)
           }}
           title="Edit Record"
+          record={record}
         />
 
         {records
           ? (
           <Timeline
             bulletSize={40}
-            classNames={{ itemTitle: '!text-3xl px-4' }}
+            classNames={{ itemTitle: '!text-3xl px-4 !text-gray-700' }}
             active={timelineActive}
             reverseActive
           >
@@ -89,14 +94,20 @@ const RecordTimeline = () => {
                 </Button>
               </div>
             </Timeline.Item>
-            {records.map(({ docId, date, in: recordIn, out, renderedHrs }) => {
+
+            {records.map((record) => {
+              const { date, recordIn, recordOut, breakIn, breakOut } = record
+              const { seconds: dateUnix } = date
+              const { seconds: recordInUnix } = recordIn
+              const { seconds: recordOutUnix } = recordOut
+
               return (
                 <Timeline.Item
-                  key={docId}
-                  title={formatDateToWord(date)}
-                  lineVariant={out ? 'solid' : 'dashed'}
+                  key={record.docId}
+                  title={formatUnixToDate(dateUnix)}
+                  lineVariant={recordOut ? 'solid' : 'dashed'}
                   bullet={
-                    out
+                    recordOut
                       ? (
                       <FontAwesomeIcon icon={faCalendarCheck} />
                         )
@@ -109,17 +120,30 @@ const RecordTimeline = () => {
                     <div className="flex flex-col gap-y-2">
                       <DescList
                         label="In: "
-                        value={formatUnixToHours(recordIn)}
+                        value={formatUnixToHours(recordInUnix)}
                       />
-                      <DescList label="Out: " value={formatUnixToHours(out)} />
+                      <DescList
+                        label="Out: "
+                        value={formatUnixToHours(recordOutUnix)}
+                      />
+                      {breakIn && breakOut && (
+                        <DescList
+                          label="Break Hours: "
+                          value={`${formatUnixToHours(
+                            breakIn.seconds
+                          )} - ${formatUnixToHours(breakOut.seconds)}`}
+                        />
+                      )}
                       <DescList
                         label="Rendered Hours: "
                         value={
-                          renderedHrs != null ? `${renderedHrs} hours` : null
+                          record.renderedHrs != null
+                            ? `${record.renderedHrs} hours`
+                            : null
                         }
                       />
                     </div>
-                    {out && (
+                    {recordOutUnix && (
                       <div className="flex items-center justify-center">
                         <Button
                           leftIcon={<FontAwesomeIcon icon={faSliders} />}
@@ -128,7 +152,7 @@ const RecordTimeline = () => {
                           classNames={{ root: 'flex-1' }}
                           onClick={() => {
                             setEditOpen(true)
-                            console.log(docId)
+                            setRecord(record)
                           }}
                         >
                           Settings

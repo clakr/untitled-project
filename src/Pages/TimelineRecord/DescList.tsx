@@ -10,9 +10,7 @@ const DescList: React.FC<DescListInterface> = ({ label, value }) => {
     <dl className="flex gap-x-2">
       <dl className="min-w-[140px] xs:min-w-[200px]">{label}</dl>
 
-      <dd className="whitespace-nowrap font-bold text-gray-500">
-        {value ?? 'N/A'}
-      </dd>
+      <dd className="whitespace-nowrap font-bold text-gray-500">{value}</dd>
     </dl>
   )
 }

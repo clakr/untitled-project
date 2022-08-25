@@ -35,8 +35,8 @@ export const generateGreetings = (): string => {
   return 'Good morning'
 }
 
-export const formatDateToWord = (date: string): ReactNode => {
-  return dayjs(date).format('MMMM DD, YYYY')
+export const formatUnixToDate = (date: number): ReactNode => {
+  return dayjs.unix(date).format('MMMM DD, YYYY')
 }
 
 export const formatUnixToHours = (unix: number | null): ReactNode => {
@@ -44,7 +44,7 @@ export const formatUnixToHours = (unix: number | null): ReactNode => {
     return dayjs.unix(unix).format('hh:mm A')
   }
 
-  return null
+  return 'N/A'
 }
 
 // const totalHours = (): ReactNode => {

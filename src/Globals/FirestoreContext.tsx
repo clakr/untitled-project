@@ -16,7 +16,7 @@ import {
 
 import { useAuth } from './AuthContext'
 import { firestore } from './Firebase'
-import { AddRecordType } from './Types'
+import { RecordType } from './Types'
 
 interface ContextInferface {
   checkRecordIfExists: () => Promise<'in' | 'out'>
@@ -25,8 +25,15 @@ interface ContextInferface {
   getUserRecords: () => Promise<DocumentData[] | null>
   addNewRecord: ({
     date,
-    duration
-  }: AddRecordType) => Promise<DocumentReference<DocumentData> | undefined>
+    duration,
+    breakDuration
+  }: RecordType) => Promise<DocumentReference<DocumentData> | undefined>
+  editRecord: ({
+    docId,
+    date,
+    duration,
+    breakDuration
+  }: RecordType) => Promise<void>
 }
 
 const FirestoreContext = createContext<ContextInferface>({} as ContextInferface)
@@ -120,11 +127,11 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
   }
 
   const getUserRecords = async () => {
-    const records: DocumentData[] = []
+    const records: DocumentData[] | null = []
     const q = query(
       recordRef,
       where('userId', '==', authedUser?.uid),
-      orderBy('in', 'desc')
+      orderBy('recordIn', 'desc')
     )
     const qSnap = await getDocs(q)
 
@@ -132,40 +139,73 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
       records.push({ docId: doc.id, ...doc.data() })
     })
 
-    if (records.length > 0) {
-      return records
-    }
-
-    return null
+    return records
   }
 
   const addNewRecord = async ({
     date,
     duration,
     breakDuration
-  }: AddRecordType) => {
-    const recordIn = dayjs(duration[0])
-    const recordOut = dayjs(duration[1])
-
-    let renderedHrs = recordOut.diff(recordIn, 'hours')
-
-    if (breakDuration) {
-      const breakIn = dayjs(breakDuration[0])
-      const breakOut = dayjs(breakDuration[1])
-
-      renderedHrs =
-        recordOut.diff(recordIn, 'hour') - breakOut.diff(breakIn, 'hour')
-    }
-
+  }: RecordType) => {
     if (authedUser) {
+      const recordIn = duration[0]
+      const recordOut = duration[1]
+
+      let breakIn: Date | null = null
+      let breakOut: Date | null = null
+      let renderedHrs = dayjs(recordOut).diff(dayjs(recordIn), 'hours')
+
+      if (breakDuration) {
+        breakIn = breakDuration[0]
+        breakOut = breakDuration[1]
+        renderedHrs =
+          dayjs(recordOut).diff(dayjs(recordIn), 'hour') -
+          dayjs(breakOut).diff(dayjs(breakIn), 'hour')
+      }
+
       return await addDoc(recordRef, {
         userId: authedUser.uid,
-        date: dayjs(date).format('YYYY-MM-DD'),
-        in: recordIn.unix(),
-        out: recordOut.unix(),
+        date,
+        recordIn,
+        recordOut,
+        breakIn: breakIn ?? null,
+        breakOut: breakOut ?? null,
         renderedHrs
       })
     }
+  }
+
+  const editRecord = async ({
+    docId,
+    date,
+    duration,
+    breakDuration
+  }: RecordType) => {
+    const docRef = doc(recordRef, docId)
+
+    const recordIn = duration[0]
+    const recordOut = duration[1]
+
+    let breakIn: Date | null = null
+    let breakOut: Date | null = null
+    let renderedHrs = dayjs(recordOut).diff(dayjs(recordIn), 'hours')
+
+    if (breakDuration) {
+      breakIn = breakDuration[0]
+      breakOut = breakDuration[1]
+      renderedHrs =
+        dayjs(recordOut).diff(dayjs(recordIn), 'hour') -
+        dayjs(breakOut).diff(dayjs(breakIn), 'hour')
+    }
+
+    return await updateDoc(docRef, {
+      date,
+      recordIn,
+      recordOut,
+      breakIn: breakIn ?? null,
+      breakOut: breakOut ?? null,
+      renderedHrs
+    })
   }
 
   const value: ContextInferface = {
@@ -173,7 +213,8 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     clockIn,
     clockOut,
     getUserRecords,
-    addNewRecord
+    addNewRecord,
+    editRecord
   }
 
   return (
