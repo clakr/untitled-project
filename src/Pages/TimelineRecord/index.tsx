@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 
 import { DocumentData } from 'firebase/firestore'
 
-import { Button, Divider, ScrollArea, Timeline } from '@mantine/core'
+import { Button, Divider, Menu, ScrollArea, Timeline } from '@mantine/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCalendar,
   faCalendarCheck,
   faCalendarPlus,
-  faSliders
+  faPenToSquare,
+  faSliders,
+  faTrashCan
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useFirestore } from '../../Globals/FirestoreContext'
@@ -16,6 +18,7 @@ import { useUserContext } from '../../Routes/UserRoute'
 
 import AsideCalendar from '../../Globals/Components/AsideCalendar'
 import RecordModal from './RecordModal'
+import DeleteModal from './DeleteModal'
 import DescList from './DescList'
 
 import {
@@ -34,6 +37,7 @@ const RecordTimeline = () => {
     const [timelineActive, setTimelineActive] = useState<number>(0)
     const [addOpen, setAddOpen] = useState<boolean>(false)
     const [editOpen, setEditOpen] = useState<boolean>(false)
+    const [deleteOpen, setDeleteOpen] = useState<boolean>(false)
     const [record, setRecord] = useState<DocumentData | null>(null)
 
     useEffect(() => {
@@ -65,6 +69,14 @@ const RecordTimeline = () => {
           }}
           title="Edit Record"
           record={record}
+        />
+
+        <DeleteModal
+          loadingState={{ loading, setLoading }}
+          opened={deleteOpen}
+          onClose={() => setDeleteOpen(false)}
+          record={record}
+          setDeleteOpen={setDeleteOpen}
         />
 
         {records
@@ -144,18 +156,39 @@ const RecordTimeline = () => {
                     </div>
                     {recordOut && (
                       <div className="flex items-center justify-center">
-                        <Button
-                          leftIcon={<FontAwesomeIcon icon={faSliders} />}
-                          variant="subtle"
-                          size="lg"
-                          classNames={{ root: 'flex-1' }}
-                          onClick={() => {
-                            setEditOpen(true)
-                            setRecord(record)
-                          }}
-                        >
-                          Settings
-                        </Button>
+                        <Menu shadow="md" width={200}>
+                          <Menu.Target>
+                            <Button
+                              leftIcon={<FontAwesomeIcon icon={faSliders} />}
+                              variant="subtle"
+                              size="lg"
+                              classNames={{ root: 'flex-1' }}
+                            >
+                              Settings
+                            </Button>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Label>Settings</Menu.Label>
+                            <Menu.Item
+                              icon={<FontAwesomeIcon icon={faPenToSquare} />}
+                              onClick={() => {
+                                setEditOpen(true)
+                                setRecord(record)
+                              }}
+                            >
+                              Edit Record
+                            </Menu.Item>
+                            <Menu.Item
+                              icon={<FontAwesomeIcon icon={faTrashCan} />}
+                              onClick={() => {
+                                setDeleteOpen(true)
+                                setRecord(record)
+                              }}
+                            >
+                              Delete Record
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
                       </div>
                     )}
                   </div>

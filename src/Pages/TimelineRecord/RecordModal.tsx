@@ -46,6 +46,11 @@ const RecordModal: React.FC<RecordModalInterface> = ({
 
   const form = useForm<RecordType>({
     initialValues,
+    initialErrors: {
+      date: '',
+      duration: '',
+      breakDuration: ''
+    },
     initialDirty
   })
 
@@ -74,6 +79,8 @@ const RecordModal: React.FC<RecordModalInterface> = ({
         ],
         breakDuration: [breakInDate, breakOutDate]
       })
+
+      form.clearErrors()
 
       form.setDirty({
         date: true
@@ -165,7 +172,12 @@ const RecordModal: React.FC<RecordModalInterface> = ({
               />
             </>
           )}
-          <Button type="submit" classNames={{ root: 'my-2' }} loading={loading}>
+          <Button
+            type="submit"
+            classNames={{ root: 'my-2' }}
+            loading={loading}
+            disabled={Object.keys(form.errors).length !== 0}
+          >
             {record ? 'Edit Record' : 'Add Record'}
           </Button>
         </form>

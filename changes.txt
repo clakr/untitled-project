@@ -1,15 +1,14 @@
 > COMMIT
 
 # Created
+- DeleteModal.tsx
+- deleteRecord() @ FirestoreContext.tsx
 
 # Refactored
-- FirestoreContext.tsx
-- Utilities.tsx
 
 # Imported
 
 ## TODO
-- Delete Record
 - Wrong Password Error redirects to Register Form
 
 ## NOTES

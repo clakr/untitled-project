@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   DocumentData,
   DocumentReference,
@@ -38,6 +39,7 @@ interface ContextInferface {
     duration,
     breakDuration
   }: RecordType) => Promise<void>
+  deleteRecord: (docId: string) => Promise<void>
 }
 
 const FirestoreContext = createContext<ContextInferface>({} as ContextInferface)
@@ -240,13 +242,18 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     })
   }
 
+  const deleteRecord = (docId: string) => {
+    return deleteDoc(doc(recordRef, docId))
+  }
+
   const value: ContextInferface = {
     checkRecordIfExists,
     clockIn,
     clockOut,
     getUserRecords,
     addNewRecord,
-    editRecord
+    editRecord,
+    deleteRecord
   }
 
   return (
