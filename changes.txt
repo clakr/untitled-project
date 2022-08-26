@@ -1,21 +1,14 @@
 > COMMIT
 
 # Created
-- DescList.tsx
-- RecordModal.tsx
 
 # Refactored
-- TimelineRecord/index.tsx
-- TimelineRecord/DescList.tsx
-- TimelineRecord/RecordModal.tsx
-- checkRecordIfExists(), getUserRecords(), addNewRecord(), editRecord() @ FirestoreContext.tsx
-- Types.tsx
+- FirestoreContext.tsx
 - Utilities.tsx
 
 # Imported
 
 ## TODO
-- Clock in and Out
 - Delete Record
 - Wrong Password Error redirects to Register Form
 

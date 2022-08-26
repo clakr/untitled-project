@@ -18,7 +18,11 @@ import AsideCalendar from '../../Globals/Components/AsideCalendar'
 import RecordModal from './RecordModal'
 import DescList from './DescList'
 
-import { formatUnixToDate, formatUnixToHours } from '../../Globals/Utilities'
+import {
+  checkIfNegative,
+  formatUnixToDate,
+  formatUnixToHours
+} from '../../Globals/Utilities'
 
 const RecordTimeline = () => {
   const { setIsLoading } = useUserContext()
@@ -99,7 +103,6 @@ const RecordTimeline = () => {
               const { date, recordIn, recordOut, breakIn, breakOut } = record
               const { seconds: dateUnix } = date
               const { seconds: recordInUnix } = recordIn
-              const { seconds: recordOutUnix } = recordOut
 
               return (
                 <Timeline.Item
@@ -124,26 +127,22 @@ const RecordTimeline = () => {
                       />
                       <DescList
                         label="Out: "
-                        value={formatUnixToHours(recordOutUnix)}
+                        value={formatUnixToHours(record.recordOut)}
                       />
                       {breakIn && breakOut && (
                         <DescList
                           label="Break Hours: "
                           value={`${formatUnixToHours(
-                            breakIn.seconds
-                          )} - ${formatUnixToHours(breakOut.seconds)}`}
+                            breakIn
+                          )} - ${formatUnixToHours(breakOut)}`}
                         />
                       )}
                       <DescList
                         label="Rendered Hours: "
-                        value={
-                          record.renderedHrs != null
-                            ? `${record.renderedHrs} hours`
-                            : null
-                        }
+                        value={checkIfNegative(record.renderedHrs)}
                       />
                     </div>
-                    {recordOutUnix && (
+                    {recordOut && (
                       <div className="flex items-center justify-center">
                         <Button
                           leftIcon={<FontAwesomeIcon icon={faSliders} />}

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Button, Divider, Modal, ModalProps, Switch } from '@mantine/core'
+import { Button, Divider, ModalProps, Switch } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useMediaQuery } from '@mantine/hooks'
 
 import { RecordType } from '../../Globals/Types'
 import { useFirestore } from '../../Globals/FirestoreContext'
@@ -15,6 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import dayjs from 'dayjs'
 import { DocumentData } from 'firebase/firestore'
+import CustomModal from '../../Globals/Components/CustomModal'
 
 interface RecordModalInterface extends ModalProps {
   loadingState: {
@@ -31,7 +31,6 @@ const RecordModal: React.FC<RecordModalInterface> = ({
 }) => {
   const { addNewRecord, editRecord } = useFirestore()
   const [switchChecked, setSwitchChecked] = useState<boolean>(true)
-  const isXS = useMediaQuery('(min-width: 450px)')
 
   const initialValues: RecordType = {
     date: '' as unknown as Date,
@@ -84,15 +83,7 @@ const RecordModal: React.FC<RecordModalInterface> = ({
 
   return (
     <>
-      <Modal
-        overlayColor="gray"
-        overlayOpacity={0.55}
-        overlayBlur={3}
-        title="Add New Record"
-        size={isXS ? 440 : 300}
-        classNames={{ modal: '!ml-0' }}
-        {...rest}
-      >
+      <CustomModal {...rest}>
         <form
           className="flex flex-col gap-y-4"
           onSubmit={form.onSubmit(async (values) => {
@@ -178,7 +169,7 @@ const RecordModal: React.FC<RecordModalInterface> = ({
             {record ? 'Edit Record' : 'Add Record'}
           </Button>
         </form>
-      </Modal>
+      </CustomModal>
     </>
   )
 }

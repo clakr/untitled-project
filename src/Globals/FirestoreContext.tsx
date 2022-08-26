@@ -21,7 +21,11 @@ import { RecordType } from './Types'
 interface ContextInferface {
   checkRecordIfExists: () => Promise<'in' | 'out'>
   clockIn: () => Promise<DocumentReference<DocumentData> | undefined>
-  clockOut: () => Promise<void> | undefined
+  clockOut: ({
+    breakDuration
+  }: {
+    breakDuration: Date[]
+  }) => Promise<void> | undefined
   getUserRecords: () => Promise<DocumentData[] | null>
   addNewRecord: ({
     date,
@@ -45,16 +49,22 @@ export const useFirestore = () => {
 const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
   const { authedUser } = useAuth()
   const recordRef = collection(firestore, 'record')
-  const dateToday = dayjs().format('YYYY-MM-DD')
 
   const findDocId = async () => {
     let docId = ''
     let max = 0
 
+    const date = dayjs(new Date())
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .millisecond(0)
+      .toDate()
+
     const q = query(
       recordRef,
       where('userId', '==', authedUser?.uid),
-      where('date', '==', dateToday)
+      where('date', '==', date)
     )
     const qSnap = await getDocs(q)
 
@@ -63,7 +73,7 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     }
 
     qSnap.forEach((doc) => {
-      const recordIn = doc.data().in
+      const recordIn = doc.data().recordIn
 
       if (max <= recordIn) {
         docId = doc.id
@@ -82,7 +92,7 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
       const docSnap = getDoc(docRef)
       const data = (await docSnap).data()
 
-      if (data && data.out != null) {
+      if (data && data.recordOut != null) {
         return 'in'
       }
 
@@ -94,32 +104,54 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
 
   const clockIn = async () => {
     if (authedUser) {
-      const now = dayjs().unix()
+      const date = dayjs(new Date())
+        .hour(0)
+        .minute(0)
+        .second(0)
+        .millisecond(0)
+        .toDate()
+      const recordIn = new Date()
 
       return await addDoc(recordRef, {
         userId: authedUser.uid,
-        date: dateToday,
-        in: now,
-        out: null,
+        date,
+        recordIn,
+        recordOut: null,
+        breakIn: null,
+        breakOut: null,
         renderedHrs: null
       })
     }
   }
 
-  const clockOut = async () => {
+  const clockOut = async ({ breakDuration }: { breakDuration: Date[] }) => {
     const docId = await findDocId()
-    if (authedUser && docId) {
+
+    if (docId) {
       const docRef = doc(recordRef, docId)
       const docSnap = await getDoc(docRef)
       const data = docSnap.data()
 
       if (data) {
-        const recordInHour = +dayjs.unix(data.in).format('H')
-        const recordOut = dayjs()
-        const renderedHrs = recordOut.subtract(recordInHour, 'hour').hour()
+        const recordIn = dayjs.unix(data.recordIn.seconds).toDate()
+        const recordOut = dayjs().toDate()
+
+        let breakIn: Date | null = null
+        let breakOut: Date | null = null
+        let renderedHrs = dayjs(recordOut).diff(dayjs(recordIn), 'hours')
+
+        if (breakDuration.length > 0) {
+          breakIn = breakDuration[0]
+          breakOut = breakDuration[1]
+          renderedHrs =
+            dayjs(recordOut).diff(dayjs(recordIn), 'hour') -
+            dayjs(breakOut).diff(dayjs(breakIn), 'hour')
+        }
 
         return await updateDoc(docRef, {
-          out: recordOut.unix(),
+          recordOut,
+          breakIn,
+          breakOut,
           renderedHrs
         })
       }
