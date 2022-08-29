@@ -1,7 +1,15 @@
 import dayjs from 'dayjs'
+import { FirebaseError } from 'firebase/app'
 import { ReactNode } from 'react'
+import { toast } from 'react-hot-toast'
 
 type NameType = string | undefined | null
+
+export const showError = (error: unknown) => {
+  if (error instanceof FirebaseError) {
+    toast.error(`${error}`)
+  }
+}
 
 export const toSentenceCase = (str: string): string => {
   return str.replace(/\w\S*/g, function (txt) {

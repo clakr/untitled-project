@@ -7,6 +7,7 @@ import React from 'react'
 import toast from 'react-hot-toast'
 import CustomModal from '../../Globals/Components/CustomModal'
 import { useFirestore } from '../../Globals/FirestoreContext'
+import { showError } from '../../Globals/Utilities'
 
 interface DeleteModalInterface extends ModalProps {
   loadingState: {
@@ -82,7 +83,7 @@ const DeleteModal: React.FC<DeleteModalInterface> = ({
               await deleteRecord(record?.docId)
               toast.success('Record Successfully Deleted')
             } catch (error) {
-              toast.error(`${error}`)
+              showError(error)
             } finally {
               setLoading(false)
             }

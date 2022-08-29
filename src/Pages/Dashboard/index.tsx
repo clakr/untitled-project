@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import dayjs from 'dayjs'
 import { Button, Divider, Switch } from '@mantine/core'
+import { useForm } from '@mantine/form'
+import { DatePicker, TimeRangeInput } from '@mantine/dates'
 import {
-  faHourglassStart,
-  faHourglassEnd,
   faCalendarDay,
+  faHourglassEnd,
+  faHourglassStart,
   faMugHot
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import { generateGreetings, getHourNow } from '../../Globals/Utilities'
-import { useUserContext } from '../../Routes/UserRoute'
 import { useFirestore } from '../../Globals/FirestoreContext'
-import toast from 'react-hot-toast'
-import { FirebaseError } from 'firebase/app'
 import AsideCalendar from '../../Globals/Components/AsideCalendar'
 import CustomModal from '../../Globals/Components/CustomModal'
-import { DatePicker, TimeRangeInput } from '@mantine/dates'
-import { useForm } from '@mantine/form'
-import dayjs from 'dayjs'
+import {
+  showError,
+  generateGreetings,
+  getHourNow
+} from '../../Globals/Utilities'
+import { useUserContext } from '../../Routes/UserRoute'
 
 const Dashboard: React.FC = () => {
   const { user, setIsLoading } = useUserContext()
@@ -72,9 +75,7 @@ const Dashboard: React.FC = () => {
               await clockOut({ ...values })
               toast.success(`Clocked out at ${getHourNow()}`)
             } catch (error) {
-              if (error instanceof FirebaseError) {
-                toast.error(`${error}`)
-              }
+              showError(error)
             } finally {
               setOpen(false)
               setShowButton(await checkRecordIfExists())
@@ -136,11 +137,10 @@ const Dashboard: React.FC = () => {
                   setShowButton(await checkRecordIfExists())
                   toast.success(`Clocked in at ${getHourNow()}`)
                 } catch (error) {
-                  if (error instanceof FirebaseError) {
-                    toast.error(`${error}`)
-                  }
+                  showError(error)
+                } finally {
+                  setLoading(false)
                 }
-                setLoading(false)
               }}
             >
               Clock In

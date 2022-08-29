@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { createEmotionCache, MantineProvider } from '@mantine/core'
+import '@fontsource/poppins'
 
 import AuthProvider from './Globals/AuthContext'
 import App from './App'
-import '@fontsource/poppins'
 import './index.css'
-import { createEmotionCache, MantineProvider } from '@mantine/core'
 
 const cache = createEmotionCache({ key: 'mantine', prepend: false })
 

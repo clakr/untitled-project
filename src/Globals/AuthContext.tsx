@@ -4,14 +4,15 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  User,
+  User as UserFirebase,
   signOut,
   updateProfile,
   sendEmailVerification
 } from 'firebase/auth'
-import { setDoc, doc, getDoc, DocumentData } from 'firebase/firestore'
+import { setDoc, doc, getDoc } from 'firebase/firestore'
 
 import { auth, firestore, FirebaseError } from './Firebase'
+import { User } from './Types'
 
 interface EmailPasswordInterface {
   email: string
@@ -25,12 +26,15 @@ interface FullNameInterface {
 }
 
 interface UpdateUserInterface extends FullNameInterface {
-  user: User
+  user: UserFirebase
 }
 
 interface ContextInferface {
-  authedUser: User | null
-  createUser: ({ email, password }: EmailPasswordInterface) => Promise<User>
+  authedUser: UserFirebase | null
+  createUser: ({
+    email,
+    password
+  }: EmailPasswordInterface) => Promise<UserFirebase>
   updateUserDisplayName: ({
     user,
     first,
@@ -43,11 +47,11 @@ interface ContextInferface {
     last,
     middle
   }: UpdateUserInterface) => Promise<void>
-  sendEmailVerificationToUser: (user: User) => Promise<void>
+  sendEmailVerificationToUser: (user: UserFirebase) => Promise<void>
   checkUserIfVerified: () => Promise<boolean | undefined>
   loginUser: (email: string, password: string) => Promise<void>
   logoutUser: () => Promise<void>
-  getUser: (uid: string) => Promise<DocumentData | undefined>
+  getUser: (uid: string) => Promise<User | undefined>
   showError: (error: unknown) => void
 }
 
@@ -58,7 +62,7 @@ export const useAuth = () => {
 }
 
 const AuthProvider = ({ children }: { children: JSX.Element }) => {
-  const [authedUser, setAuthedUser] = useState<User | null>(null)
+  const [authedUser, setAuthedUser] = useState<UserFirebase | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
@@ -102,7 +106,7 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     })
   }
 
-  const sendEmailVerificationToUser = (user: User) => {
+  const sendEmailVerificationToUser = (user: UserFirebase) => {
     return sendEmailVerification(user)
   }
 
@@ -116,7 +120,7 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     const promise = signInWithEmailAndPassword(auth, email, password).then(
       ({ user }) => {
         if (!user.emailVerified) {
-          throw new Error('User email not verified')
+          throw new Error('UserFirebase email not verified')
         }
       }
     )
@@ -132,7 +136,7 @@ const AuthProvider = ({ children }: { children: JSX.Element }) => {
     const docRef = doc(firestore, 'users', uid)
     const docData = await getDoc(docRef)
 
-    return docData.data()
+    return docData.data() as User
   }
 
   const showError = (error: unknown) => {

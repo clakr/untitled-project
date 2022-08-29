@@ -31,23 +31,26 @@ const SideNav = ({ isOpened }: { isOpened: boolean }) => {
       hidden={!isOpened}
       width={{ sm: 250, md: 300 }}
     >
-      <div className="flex flex-col gap-y-2">
-        <SideNavLink label="Dashboard" to="/u/dashboard" icon={faChartLine} />
-        <SideNavLink label="Timeline" to="/u/timeline" icon={faTimeline} />
-        <SideNavLink label="Reports" to="/u/reports" icon={faFileLines} />
-        <Divider />
-        <SideNavLink label="Profile" to="/u/profile" icon={faUserAlt} />
-        <SideNavLink label="404" to="/u/qwe" icon={faUserAlt} />
-        <Divider />
-        <Button
-          color="red"
-          variant="subtle"
-          leftIcon={<FontAwesomeIcon icon={faSignOutAlt} />}
-          classNames={{ inner: 'gap-x-2', label: 'flex-1' }}
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
+      <div className="flex h-full flex-col justify-between">
+        <div className="flex flex-col gap-y-2">
+          <SideNavLink label="Dashboard" to="/u/dashboard" icon={faChartLine} />
+          <SideNavLink label="Timeline" to="/u/timeline" icon={faTimeline} />
+          <SideNavLink label="Reports" to="/u/reports" icon={faFileLines} />
+          <Divider />
+          <SideNavLink label="Profile" to="/u/profile" icon={faUserAlt} />
+        </div>
+        <div className="flex flex-col gap-y-2">
+          <Divider />
+          <Button
+            color="red"
+            variant="subtle"
+            leftIcon={<FontAwesomeIcon icon={faSignOutAlt} />}
+            classNames={{ inner: 'gap-x-2', label: 'flex-1' }}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
       </div>
     </Navbar>
   )

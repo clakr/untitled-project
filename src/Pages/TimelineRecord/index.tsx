@@ -40,6 +40,179 @@ const RecordTimeline = () => {
     const [deleteOpen, setDeleteOpen] = useState<boolean>(false)
     const [record, setRecord] = useState<DocumentData | null>(null)
 
+    const ShowRecords = () => {
+      return (
+        <Timeline
+          bulletSize={40}
+          classNames={{
+            itemTitle: '!text-2xl md:!text-3xl xl:!text-4xl pl-4 !text-gray-700'
+          }}
+          active={timelineActive}
+          reverseActive
+        >
+          <Timeline.Item
+            title="Add Record"
+            lineVariant="dotted"
+            bullet={<FontAwesomeIcon icon={faCalendarPlus} />}
+          >
+            <div className="flex h-[150px] py-4 2xl:px-8">
+              <Button
+                onClick={() => {
+                  setAddOpen(true)
+                }}
+                color="dark"
+                variant="subtle"
+                classNames={{
+                  root: 'flex-1 !h-full group',
+                  label:
+                    'flex flex-col justify-center gap-y-2 group-hover:text-slate-50 text-gray-400'
+                }}
+              >
+                <FontAwesomeIcon icon={faCalendarPlus} size="3x" />
+                <h3 className="text-xs">Add new record for specific date</h3>
+              </Button>
+            </div>
+          </Timeline.Item>
+
+          {records?.map((record) => {
+            const { date, recordIn, recordOut, breakIn, breakOut } = record
+            const { seconds: dateUnix } = date
+            const { seconds: recordInUnix } = recordIn
+
+            return (
+              <Timeline.Item
+                key={record.docId}
+                title={formatUnixToDate(dateUnix)}
+                lineVariant={recordOut ? 'solid' : 'dashed'}
+                bullet={
+                  recordOut
+                    ? (
+                    <FontAwesomeIcon icon={faCalendarCheck} />
+                      )
+                    : (
+                    <FontAwesomeIcon icon={faCalendar} />
+                      )
+                }
+              >
+                <div className="flex flex-col justify-between gap-y-4 py-4 text-gray-400 sm:flex-row md:flex-col lg:flex-row 2xl:gap-x-8 2xl:px-8">
+                  <div className="flex flex-col gap-y-2 2xl:flex-row 2xl:gap-x-20">
+                    <div className="flex flex-col gap-y-2 2xl:min-w-[365px]">
+                      <DescList
+                        label="In: "
+                        value={formatUnixToHours(recordInUnix)}
+                      />
+                      <DescList
+                        label="Out: "
+                        value={formatUnixToHours(record.recordOut)}
+                      />
+                      {breakIn && breakOut && (
+                        <DescList
+                          label="Break Time: "
+                          value={`${formatUnixToHours(
+                            breakIn
+                          )} - ${formatUnixToHours(breakOut)}`}
+                        />
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-y-2">
+                      <DescList label="Break Hour: " value="1 hour" />
+                      <DescList
+                        label="Rendered Hours: "
+                        value={checkIfNegative(record.renderedHrs)}
+                      />
+                    </div>
+                  </div>
+
+                  {recordOut && (
+                    <div className="flex items-center justify-center">
+                      <Menu
+                        shadow="md"
+                        width={200}
+                        classNames={{ item: 'gap-x-2' }}
+                      >
+                        <Menu.Target>
+                          <Button
+                            leftIcon={<FontAwesomeIcon icon={faSliders} />}
+                            variant="subtle"
+                            size="lg"
+                            classNames={{
+                              root: 'flex-1'
+                            }}
+                          >
+                            Settings
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Label>Settings</Menu.Label>
+                          <Menu.Item
+                            icon={
+                              <FontAwesomeIcon
+                                color="orange"
+                                icon={faPenToSquare}
+                              />
+                            }
+                            onClick={() => {
+                              setEditOpen(true)
+                              setRecord(record)
+                            }}
+                          >
+                            Edit Record
+                          </Menu.Item>
+                          <Menu.Item
+                            icon={
+                              <FontAwesomeIcon color="red" icon={faTrashCan} />
+                            }
+                            onClick={() => {
+                              setDeleteOpen(true)
+                              setRecord(record)
+                            }}
+                          >
+                            Delete Record
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </div>
+                  )}
+                </div>
+              </Timeline.Item>
+            )
+          })}
+        </Timeline>
+      )
+    }
+
+    const ShowAddRecord = () => {
+      return (
+        <Timeline
+          bulletSize={40}
+          classNames={{ itemTitle: '!text-2xl pl-4' }}
+          reverseActive
+        >
+          <Timeline.Item
+            title="Add Record"
+            lineVariant="dotted"
+            bullet={<FontAwesomeIcon icon={faCalendarPlus} />}
+          >
+            <div className="flex h-[150px]">
+              <Button
+                onClick={() => setAddOpen(true)}
+                color="dark"
+                variant="subtle"
+                classNames={{
+                  root: 'flex-1 !h-full group',
+                  label:
+                    'flex flex-col justify-center gap-y-2 group-hover:text-slate-50 text-gray-400'
+                }}
+              >
+                <FontAwesomeIcon icon={faCalendarPlus} size="3x" />
+                <h3 className="text-xs">Add new record for specific date</h3>
+              </Button>
+            </div>
+          </Timeline.Item>
+        </Timeline>
+      )
+    }
+
     useEffect(() => {
       if (records) {
         setTimelineActive(
@@ -79,153 +252,7 @@ const RecordTimeline = () => {
           setDeleteOpen={setDeleteOpen}
         />
 
-        {records
-          ? (
-          <Timeline
-            bulletSize={40}
-            classNames={{ itemTitle: '!text-3xl px-4 !text-gray-700' }}
-            active={timelineActive}
-            reverseActive
-          >
-            <Timeline.Item
-              title="Add Record"
-              lineVariant="dotted"
-              bullet={<FontAwesomeIcon icon={faCalendarPlus} />}
-            >
-              <div className="flex h-[150px] px-8 py-4">
-                <Button
-                  onClick={() => {
-                    setAddOpen(true)
-                  }}
-                  color="dark"
-                  variant="subtle"
-                  classNames={{
-                    root: 'flex-1 !h-full group',
-                    label:
-                      'flex flex-col justify-center gap-y-2 group-hover:text-slate-50 text-gray-400'
-                  }}
-                >
-                  <FontAwesomeIcon icon={faCalendarPlus} size="3x" />
-                  <h3 className="text-xs">Add new record for specific date</h3>
-                </Button>
-              </div>
-            </Timeline.Item>
-
-            {records.map((record) => {
-              const { date, recordIn, recordOut, breakIn, breakOut } = record
-              const { seconds: dateUnix } = date
-              const { seconds: recordInUnix } = recordIn
-
-              return (
-                <Timeline.Item
-                  key={record.docId}
-                  title={formatUnixToDate(dateUnix)}
-                  lineVariant={recordOut ? 'solid' : 'dashed'}
-                  bullet={
-                    recordOut
-                      ? (
-                      <FontAwesomeIcon icon={faCalendarCheck} />
-                        )
-                      : (
-                      <FontAwesomeIcon icon={faCalendar} />
-                        )
-                  }
-                >
-                  <div className="flex flex-col gap-y-4 px-8 py-2 text-gray-400 2xl:flex-row 2xl:gap-x-20">
-                    <div className="flex flex-col gap-y-2">
-                      <DescList
-                        label="In: "
-                        value={formatUnixToHours(recordInUnix)}
-                      />
-                      <DescList
-                        label="Out: "
-                        value={formatUnixToHours(record.recordOut)}
-                      />
-                      {breakIn && breakOut && (
-                        <DescList
-                          label="Break Hours: "
-                          value={`${formatUnixToHours(
-                            breakIn
-                          )} - ${formatUnixToHours(breakOut)}`}
-                        />
-                      )}
-                      <DescList
-                        label="Rendered Hours: "
-                        value={checkIfNegative(record.renderedHrs)}
-                      />
-                    </div>
-                    {recordOut && (
-                      <div className="flex items-center justify-center">
-                        <Menu shadow="md" width={200}>
-                          <Menu.Target>
-                            <Button
-                              leftIcon={<FontAwesomeIcon icon={faSliders} />}
-                              variant="subtle"
-                              size="lg"
-                              classNames={{ root: 'flex-1' }}
-                            >
-                              Settings
-                            </Button>
-                          </Menu.Target>
-                          <Menu.Dropdown>
-                            <Menu.Label>Settings</Menu.Label>
-                            <Menu.Item
-                              icon={<FontAwesomeIcon icon={faPenToSquare} />}
-                              onClick={() => {
-                                setEditOpen(true)
-                                setRecord(record)
-                              }}
-                            >
-                              Edit Record
-                            </Menu.Item>
-                            <Menu.Item
-                              icon={<FontAwesomeIcon icon={faTrashCan} />}
-                              onClick={() => {
-                                setDeleteOpen(true)
-                                setRecord(record)
-                              }}
-                            >
-                              Delete Record
-                            </Menu.Item>
-                          </Menu.Dropdown>
-                        </Menu>
-                      </div>
-                    )}
-                  </div>
-                </Timeline.Item>
-              )
-            })}
-          </Timeline>
-            )
-          : (
-          <Timeline
-            bulletSize={40}
-            classNames={{ itemTitle: '!text-3xl px-4' }}
-            reverseActive
-          >
-            <Timeline.Item
-              title="Add Record"
-              lineVariant="dotted"
-              bullet={<FontAwesomeIcon icon={faCalendarPlus} />}
-            >
-              <div className="flex h-[150px] px-8 py-4">
-                <Button
-                  onClick={() => setAddOpen(true)}
-                  color="dark"
-                  variant="subtle"
-                  classNames={{
-                    root: 'flex-1 !h-full group',
-                    label:
-                      'flex flex-col justify-center gap-y-2 group-hover:text-slate-50 text-gray-400'
-                  }}
-                >
-                  <FontAwesomeIcon icon={faCalendarPlus} size="3x" />
-                  <h3 className="text-xs">Add new record for specific date</h3>
-                </Button>
-              </div>
-            </Timeline.Item>
-          </Timeline>
-            )}
+        {records ? <ShowRecords /> : <ShowAddRecord />}
       </>
     )
   }
@@ -248,7 +275,7 @@ const RecordTimeline = () => {
           <h1 className="text-4xl font-semibold">Timeline</h1>
           <Divider />
         </div>
-        <ScrollArea className="h-[75vh] w-full">
+        <ScrollArea className="h-full w-full 2xl:h-[75vh]">
           <TimelineRecord />
         </ScrollArea>
       </div>

@@ -1,10 +1,10 @@
 > COMMIT
 
 # Created
-- DeleteModal.tsx
-- deleteRecord() @ FirestoreContext.tsx
 
 # Refactored
+- Header
+- SideNav.tsx
 
 # Imported
 

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
 import { Button, Divider, ModalProps, Switch } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
-import { RecordType } from '../../Globals/Types'
+import { Record } from '../../Globals/Types'
 import { useFirestore } from '../../Globals/FirestoreContext'
 import { DatePicker, TimeRangeInput } from '@mantine/dates'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -15,6 +14,7 @@ import {
 import dayjs from 'dayjs'
 import { DocumentData } from 'firebase/firestore'
 import CustomModal from '../../Globals/Components/CustomModal'
+import { showError } from '../../Globals/Utilities'
 
 interface RecordModalInterface extends ModalProps {
   loadingState: {
@@ -32,7 +32,7 @@ const RecordModal: React.FC<RecordModalInterface> = ({
   const { addNewRecord, editRecord } = useFirestore()
   const [switchChecked, setSwitchChecked] = useState<boolean>(true)
 
-  const initialValues: RecordType = {
+  const initialValues: Record = {
     date: '' as unknown as Date,
     duration: [],
     breakDuration: []
@@ -44,7 +44,7 @@ const RecordModal: React.FC<RecordModalInterface> = ({
     breakDuration: false
   }
 
-  const form = useForm<RecordType>({
+  const form = useForm<Record>({
     initialValues,
     initialErrors: {
       date: '',
@@ -100,7 +100,7 @@ const RecordModal: React.FC<RecordModalInterface> = ({
                 ? await editRecord({ docId: record.docId, ...values })
                 : await addNewRecord({ ...values })
             } catch (error) {
-              toast.error(`${error}`)
+              showError(error)
             } finally {
               setLoading(false)
             }

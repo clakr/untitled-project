@@ -16,6 +16,7 @@ import { useAuth } from '../Globals/AuthContext'
 import FirestoreProvider from '../Globals/FirestoreContext'
 import SideNav from '../Globals/Components/SideNav'
 import { getAcronym } from '../Globals/Utilities'
+import { User } from '../Globals/Types'
 
 interface UserContextInterface {
   user: DocumentData | undefined
@@ -26,7 +27,14 @@ interface UserContextInterface {
 const UserRoute: React.FC = () => {
   const navigate = useNavigate()
   const { authedUser, getUser } = useAuth()
-  const [user, setUser] = useState<DocumentData | undefined>({})
+  const [user, setUser] = useState<User | undefined>({
+    name: {
+      first: '',
+      last: '',
+      middle: ''
+    },
+    email: ''
+  })
   const [isVerified, setIsVerified] = useState<boolean>(true)
   const [isLogged, setIsLogged] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -37,10 +45,7 @@ const UserRoute: React.FC = () => {
     const getUserData = async () => {
       if (authedUser) {
         const data = await getUser(authedUser?.uid)
-        setUser((prevState) => ({
-          ...prevState,
-          ...data
-        }))
+        setUser(data)
       }
       setIsLoading(false)
     }
@@ -82,7 +87,7 @@ const UserRoute: React.FC = () => {
         header={
           <Header height={75} p="md">
             <div className="flex h-full items-center gap-x-4">
-              <div className="flex-1">
+              <div className="flex flex-1 gap-x-4">
                 <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
                   <Burger
                     opened={isOpened}

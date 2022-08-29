@@ -15,7 +15,7 @@ const NotFound = () => {
           <span className="text-center text-3xl font-black">404:</span> Site Not
           Found
         </h1>
-        <Button color="" variant="subtle" onClick={() => navigate(-1)}>
+        <Button variant="subtle" onClick={() => navigate(-1)}>
           Go Back
         </Button>
       </div>

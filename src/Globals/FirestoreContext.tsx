@@ -17,7 +17,7 @@ import {
 
 import { useAuth } from './AuthContext'
 import { firestore } from './Firebase'
-import { RecordType } from './Types'
+import { Record } from './Types'
 
 interface ContextInferface {
   checkRecordIfExists: () => Promise<'in' | 'out'>
@@ -32,13 +32,13 @@ interface ContextInferface {
     date,
     duration,
     breakDuration
-  }: RecordType) => Promise<DocumentReference<DocumentData> | undefined>
+  }: Record) => Promise<DocumentReference<DocumentData> | undefined>
   editRecord: ({
     docId,
     date,
     duration,
     breakDuration
-  }: RecordType) => Promise<void>
+  }: Record) => Promise<void>
   deleteRecord: (docId: string) => Promise<void>
 }
 
@@ -176,11 +176,7 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     return records
   }
 
-  const addNewRecord = async ({
-    date,
-    duration,
-    breakDuration
-  }: RecordType) => {
+  const addNewRecord = async ({ date, duration, breakDuration }: Record) => {
     if (authedUser) {
       const recordIn = duration[0]
       const recordOut = duration[1]
@@ -214,7 +210,7 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     date,
     duration,
     breakDuration
-  }: RecordType) => {
+  }: Record) => {
     const docRef = doc(recordRef, docId)
 
     const recordIn = duration[0]

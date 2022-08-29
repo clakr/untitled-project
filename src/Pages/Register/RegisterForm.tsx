@@ -17,6 +17,7 @@ import { useAuth } from '../../Globals/AuthContext'
 import { LinkCustom, FormWrapper } from '../../Globals/Components'
 import StepperIcon from './StepperIcon'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { showError } from '../../Globals/Utilities'
 
 type EmailPasswordFormType = {
   email: string
@@ -190,10 +191,10 @@ const NameForm: React.FC<FormInterface<FullNameFormType>> = ({
             setStepperActive((current) => (current < 3 ? current + 1 : current))
           } catch (error) {
             showError(error)
+          } finally {
+            setLoading(false)
           }
         }
-
-        setLoading(false)
       })}
     >
       <div className="space-y-4">
@@ -346,16 +347,14 @@ const RegisterForm: React.FC = () => {
                 onClick={async () => {
                   try {
                     const emailVerified = await checkUserIfVerified()
-
                     if (emailVerified) {
                       toast.success('Register Success')
                       navigate('/u/dashboard')
                       return
                     }
-
                     throw new Error('User not verified')
                   } catch (error) {
-                    toast.error(`${error}`)
+                    showError(error)
                   }
                 }}
               >

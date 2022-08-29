@@ -9,6 +9,7 @@ import FormWrapper from '../../Globals/Components/FormWrapper'
 import toast from 'react-hot-toast'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAt, faKey } from '@fortawesome/free-solid-svg-icons'
+import { showError } from '../../Globals/Utilities'
 
 type EmailPasswordFormType = {
   email: string
@@ -54,11 +55,11 @@ const LoginForm: React.FC = () => {
             toast.success('Login Success')
             navigate('/u/dashboard')
           } catch (error) {
-            toast.error(`${error}`)
+            showError(error)
             navigate('/register')
+          } finally {
+            setLoading(false)
           }
-
-          setLoading(false)
         })}
       >
         <FormWrapper>
