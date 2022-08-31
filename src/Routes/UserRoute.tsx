@@ -17,6 +17,7 @@ import FirestoreProvider from '../Globals/FirestoreContext'
 import SideNav from '../Globals/Components/SideNav'
 import { getAcronym } from '../Globals/Utilities'
 import { User } from '../Globals/Types'
+import AsideCalendar from '../Globals/Components/AsideCalendar'
 
 interface UserContextInterface {
   user: DocumentData | undefined
@@ -109,7 +110,10 @@ const UserRoute: React.FC = () => {
           </div>
             )
           : (
-          <Outlet context={{ user, isLoading, setIsLoading }} />
+          <>
+            <Outlet context={{ user, isLoading, setIsLoading }} />
+            <AsideCalendar />
+          </>
             )}
       </AppShell>
     </FirestoreProvider>

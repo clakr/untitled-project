@@ -16,7 +16,6 @@ import {
 import { useFirestore } from '../../Globals/FirestoreContext'
 import { useUserContext } from '../../Routes/UserRoute'
 
-import AsideCalendar from '../../Globals/Components/AsideCalendar'
 import RecordModal from './RecordModal'
 import DeleteModal from './DeleteModal'
 import DescList from './DescList'
@@ -75,13 +74,14 @@ const RecordTimeline = () => {
           </Timeline.Item>
 
           {records?.map((record) => {
-            const { date, recordIn, recordOut, breakIn, breakOut } = record
+            const { docId, date, recordIn, recordOut, breakIn, breakOut } =
+              record
             const { seconds: dateUnix } = date
             const { seconds: recordInUnix } = recordIn
 
             return (
               <Timeline.Item
-                key={record.docId}
+                key={docId}
                 title={formatUnixToDate(dateUnix)}
                 lineVariant={recordOut ? 'solid' : 'dashed'}
                 bullet={
@@ -103,7 +103,7 @@ const RecordTimeline = () => {
                       />
                       <DescList
                         label="Out: "
-                        value={formatUnixToHours(record.recordOut)}
+                        value={formatUnixToHours(recordOut)}
                       />
                       {breakIn && breakOut && (
                         <DescList
@@ -185,7 +185,9 @@ const RecordTimeline = () => {
       return (
         <Timeline
           bulletSize={40}
-          classNames={{ itemTitle: '!text-2xl pl-4' }}
+          classNames={{
+            itemTitle: '!text-2xl md:!text-3xl xl:!text-4xl pl-4 !text-gray-700'
+          }}
           reverseActive
         >
           <Timeline.Item
@@ -260,7 +262,7 @@ const RecordTimeline = () => {
   useEffect(() => {
     setIsLoading(true)
     const getRecords = async () => {
-      const data = await getUserRecords()
+      const data = await getUserRecords(0)
       setRecords(data)
     }
 
@@ -269,17 +271,14 @@ const RecordTimeline = () => {
   }, [loading])
 
   return (
-    <div className="flex h-full gap-x-4">
-      <div className="flex flex-1 flex-col gap-y-1">
-        <div className="mb-6 space-y-2">
-          <h1 className="text-4xl font-semibold">Timeline</h1>
-          <Divider />
-        </div>
-        <ScrollArea className="h-full w-full 2xl:h-[75vh]">
-          <TimelineRecord />
-        </ScrollArea>
+    <div className="flex flex-col gap-y-1">
+      <div className="mb-6 space-y-2">
+        <h1 className="text-4xl font-semibold">Timeline</h1>
+        <Divider />
       </div>
-      <AsideCalendar />
+      <ScrollArea className="h-full w-full 2xl:h-[75vh]">
+        <TimelineRecord />
+      </ScrollArea>
     </div>
   )
 }

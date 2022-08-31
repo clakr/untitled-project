@@ -9,6 +9,7 @@ import {
   DocumentReference,
   getDoc,
   getDocs,
+  limit,
   orderBy,
   query,
   updateDoc,
@@ -21,13 +22,17 @@ import { Record } from './Types'
 
 interface ContextInferface {
   checkRecordIfExists: () => Promise<'in' | 'out'>
+  getTotalRecords: () => Promise<{
+    totalRenderedHours: number
+    count: number
+  }>
   clockIn: () => Promise<DocumentReference<DocumentData> | undefined>
   clockOut: ({
     breakDuration
   }: {
     breakDuration: Date[]
   }) => Promise<void> | undefined
-  getUserRecords: () => Promise<DocumentData[] | null>
+  getUserRecords: (limit: number) => Promise<DocumentData[] | null>
   addNewRecord: ({
     date,
     duration,
@@ -84,6 +89,19 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     })
 
     return docId
+  }
+
+  const getTotalRecords = async () => {
+    const q = query(
+      recordRef,
+      where('userId', '==', authedUser?.uid),
+      orderBy('recordIn', 'desc')
+    )
+
+    return {
+      totalRenderedHours: 45,
+      count: (await getDocs(q)).size
+    }
   }
 
   const checkRecordIfExists = async () => {
@@ -160,13 +178,24 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     }
   }
 
-  const getUserRecords = async () => {
+  const getUserRecords = async (limitRecord = 0) => {
     const records: DocumentData[] | null = []
-    const q = query(
+
+    let q = query(
       recordRef,
       where('userId', '==', authedUser?.uid),
       orderBy('recordIn', 'desc')
     )
+
+    if (limitRecord > 0) {
+      q = query(
+        recordRef,
+        where('userId', '==', authedUser?.uid),
+        orderBy('recordIn', 'desc'),
+        limit(limitRecord)
+      )
+    }
+
     const qSnap = await getDocs(q)
 
     qSnap.forEach((doc) => {
@@ -244,6 +273,7 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
 
   const value: ContextInferface = {
     checkRecordIfExists,
+    getTotalRecords,
     clockIn,
     clockOut,
     getUserRecords,

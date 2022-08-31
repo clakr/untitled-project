@@ -120,44 +120,41 @@ const Dashboard: React.FC = () => {
         </form>
       </CustomModal>
 
-      <div className="flex h-full gap-x-4">
-        <div className="flex flex-1 flex-col gap-y-4">
-          <h1 className="text-4xl md:text-5xl xl:text-6xl">
-            {`${generateGreetings()}, `}
-            <span className="whitespace-nowrap font-bold">{`${user?.name.first}!`}</span>
-          </h1>
-          {showButton === 'in' && (
-            <Button
-              leftIcon={<FontAwesomeIcon icon={faHourglassStart} />}
-              loading={loading}
-              onClick={async () => {
-                setLoading(true)
-                try {
-                  await clockIn()
-                  setShowButton(await checkRecordIfExists())
-                  toast.success(`Clocked in at ${getHourNow()}`)
-                } catch (error) {
-                  showError(error)
-                } finally {
-                  setLoading(false)
-                }
-              }}
-            >
-              Clock In
-            </Button>
-          )}
-          {showButton === 'out' && (
-            <Button
-              variant="light"
-              leftIcon={<FontAwesomeIcon icon={faHourglassEnd} />}
-              loading={loading}
-              onClick={() => setOpen(true)}
-            >
-              Clock Out
-            </Button>
-          )}
-        </div>
-        <AsideCalendar />
+      <div className="flex flex-col gap-y-4">
+        <h1 className="text-4xl md:text-5xl xl:text-6xl">
+          {`${generateGreetings()}, `}
+          <span className="whitespace-nowrap font-bold">{`${user?.name.first}!`}</span>
+        </h1>
+        {showButton === 'in' && (
+          <Button
+            leftIcon={<FontAwesomeIcon icon={faHourglassStart} />}
+            loading={loading}
+            onClick={async () => {
+              setLoading(true)
+              try {
+                await clockIn()
+                setShowButton(await checkRecordIfExists())
+                toast.success(`Clocked in at ${getHourNow()}`)
+              } catch (error) {
+                showError(error)
+              } finally {
+                setLoading(false)
+              }
+            }}
+          >
+            Clock In
+          </Button>
+        )}
+        {showButton === 'out' && (
+          <Button
+            variant="light"
+            leftIcon={<FontAwesomeIcon icon={faHourglassEnd} />}
+            loading={loading}
+            onClick={() => setOpen(true)}
+          >
+            Clock Out
+          </Button>
+        )}
       </div>
     </>
   )

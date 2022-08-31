@@ -3,16 +3,18 @@
 # Created
 
 # Refactored
-- Header
-- SideNav.tsx
+- show initial reports @ 5, and 'load more' button to show remaining until max record count @ Reports/index.tsx
 
 # Imported
 
 ## TODO
-- Wrong Password Error redirects to Register Form
+- Generate report through date range and show total rendered hrs based of data input.
 
 ## NOTES
+- Wrong Password Error redirects to Register Form
+- Timeline
+  -> Radial Progress (?)
+- Aside Calendar 
+  -> Total Rendered Hours (?)
 - Dashboard
   -> Show atleast 5 latest records 
-- Reports
-  -> Total Hrs of all records

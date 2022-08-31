@@ -62,9 +62,3 @@ export const formatUnixToHours = (unix: number | null): ReactNode => {
 export const checkIfNegative = (hour: number) => {
   return hour > 0 ? `${hour} hours` : 'N/A'
 }
-
-// const totalHours = (): ReactNode => {
-//   return records
-//     ?.map((doc) => doc.renderedHrs)
-//     .reduce((total, hrs) => total + hrs)
-// }
