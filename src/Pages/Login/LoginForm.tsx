@@ -82,6 +82,7 @@ const LoginForm: React.FC = () => {
               placeholder="juandelacruz@gmail.com"
               classNames={{ label: 'px-3' }}
               autoComplete="on"
+              autoFocus
               required
               icon={<FontAwesomeIcon icon={faAt} />}
               {...form.getInputProps('email')}

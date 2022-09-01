@@ -45,6 +45,7 @@ interface ContextInferface {
     breakDuration
   }: Record) => Promise<void>
   deleteRecord: (docId: string) => Promise<void>
+  filterRecord: (range: Array<Date>) => void
 }
 
 const FirestoreContext = createContext<ContextInferface>({} as ContextInferface)
@@ -92,15 +93,25 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
   }
 
   const getTotalRecords = async () => {
+    const records: DocumentData[] | null = []
+
     const q = query(
       recordRef,
       where('userId', '==', authedUser?.uid),
       orderBy('recordIn', 'desc')
     )
 
+    const qSnap = await getDocs(q)
+
+    qSnap.forEach((doc) => {
+      records.push({ docId: doc.id, ...doc.data() })
+    })
+
     return {
-      totalRenderedHours: 45,
-      count: (await getDocs(q)).size
+      totalRenderedHours: records
+        .map((doc) => doc.renderedHrs)
+        .reduce((total, hrs) => total + hrs),
+      count: qSnap.size
     }
   }
 
@@ -271,6 +282,10 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     return deleteDoc(doc(recordRef, docId))
   }
 
+  const filterRecord = (range: Array<Date>) => {
+    alert(JSON.stringify(range, null, 2))
+  }
+
   const value: ContextInferface = {
     checkRecordIfExists,
     getTotalRecords,
@@ -279,7 +294,8 @@ const FirestoreProvider = ({ children }: { children: JSX.Element }) => {
     getUserRecords,
     addNewRecord,
     editRecord,
-    deleteRecord
+    deleteRecord,
+    filterRecord
   }
 
   return (

@@ -56,9 +56,9 @@ export const formatUnixToHours = (unix: number | null): ReactNode => {
     return dayjs.unix(unix).format('hh:mm A')
   }
 
-  return 'N/A'
+  return '-'
 }
 
 export const checkIfNegative = (hour: number) => {
-  return hour > 0 ? `${hour} hours` : 'N/A'
+  return hour > 0 ? `${hour} hours` : '-'
 }

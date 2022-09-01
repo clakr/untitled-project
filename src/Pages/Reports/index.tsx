@@ -57,7 +57,7 @@ const Reports = () => {
                   </>
                     )
                   : (
-                      'N/A'
+                      '-'
                     )}
               </td>
               <td>{checkIfNegative(record.renderedHrs)}</td>
@@ -96,37 +96,39 @@ const Reports = () => {
         <h1 className="text-4xl font-semibold">Reports</h1>
         <Divider />
       </div>
-      <ScrollArea className="h-[50vh]">
-        <Table horizontalSpacing="xl" verticalSpacing="md" fontSize="md">
-          <thead className="sticky top-0 bg-slate-50">
-            <tr>
-              <th>Date</th>
-              <th>In</th>
-              <th>Out</th>
-              <th>Break Hours</th>
-              <th>Rendered Hours</th>
-            </tr>
-          </thead>
-          <tbody>
-            <RecordRow />
-            {records?.length !== count && (
+      <div className="flex flex-col gap-8">
+        <ScrollArea className="h-full">
+          <Table horizontalSpacing="xl" verticalSpacing="md" fontSize="md">
+            <thead className="sticky top-0 bg-slate-50">
               <tr>
-                <td colSpan={5} className="text-center">
-                  <Button
-                    variant="light"
-                    leftIcon={<FontAwesomeIcon icon={faSpinner} />}
-                    onClick={() => setLimit((prev) => prev + INITIAL_LIMIT)}
-                    classNames={{ root: '!w-full' }}
-                  >
-                    Load More
-                  </Button>
-                </td>
+                <th>Date</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Break Hours</th>
+                <th>Rendered Hours</th>
               </tr>
-            )}
-          </tbody>
-          <RecordFooter />
-        </Table>
-      </ScrollArea>
+            </thead>
+            <tbody>
+              <RecordRow />
+              {records?.length !== count && (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    <Button
+                      variant="light"
+                      leftIcon={<FontAwesomeIcon icon={faSpinner} />}
+                      onClick={() => setLimit((prev) => prev + INITIAL_LIMIT)}
+                      classNames={{ root: '!w-full' }}
+                    >
+                      Load More
+                    </Button>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            <RecordFooter />
+          </Table>
+        </ScrollArea>
+      </div>
     </div>
   )
 }
